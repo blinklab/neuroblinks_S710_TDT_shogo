@@ -7,6 +7,7 @@
 # Nested user-specific files in TDT directory
 DataTanks/*
 UserFiles/*
+.timestamp
 
 
 # OS generated files 
