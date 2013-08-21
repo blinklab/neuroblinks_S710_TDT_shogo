@@ -9,16 +9,25 @@ vidobj = videoinput('gige', ch, 'Mono8');
 src = getselectedsource(vidobj);
 src.ExposureTimeAbs = 4900;
 % src.AllGainRaw=7;
-src.AllGainRaw=12;
+% src.AllGainRaw=12;
+src.GainRaw=12;		% The name changed in Matlab 2013a
 % src.NetworkPacketSize = '9014';
-src.PacketSize = '9014';
+% src.PacketSize = '9014';
+src.PacketSize = 9014;	% Matlab 2013a uses integer value
 vidobj.LoggingMode = 'memory'; vidobj.FramesPerTrigger=1;
 src.AcquisitionFrameRateAbs=200;
 
 %for 2010b
 % triggerconfig(vidobj,'Hardware','RisingEdge','externalTrigger')
 % triggerconfig(vidobj, 'hardware', 'risingEdge', 'externalTrigger');
-triggerconfig(vidobj, 'hardware', 'RisingEdge', 'Line1-FrameStart');
+% triggerconfig(vidobj, 'hardware', 'RisingEdge', 'Line1-FrameStart');
+
+%for 2013a
+triggerconfig(vidobj, 'hardware', 'DeviceSpecific', 'DeviceSpecific');
+src.TriggerMode='On';
+src.TriggerSelector='FrameStart';
+src.TriggerSource='Freerun';
+% src.TriggerSource='Line1';
 
 %% Save objects to root app data
 

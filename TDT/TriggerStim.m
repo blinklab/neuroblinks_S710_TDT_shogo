@@ -57,6 +57,7 @@ else
 end
 
 flushdata(vidobj); % Remove any data from buffer before triggering
+src.TriggerSource='Line1';  % Switch from free run to TTL mode
 start(vidobj)
 
 metadata.ts(2)=etime(clock,datevec(metadata.ts(1)));

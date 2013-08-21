@@ -3,6 +3,7 @@ function savetrial(obj,event)
 vidobj=getappdata(0,'vidobj');
 
 pause(1e-3)
+src.TriggerSource='Freerun';	% Switch back to free run mode so we get a preview
 % data=getdata(vidobj,vidobj.TriggerRepeat+1);
 data=getdata(vidobj,vidobj.FramesPerTrigger*(vidobj.TriggerRepeat + 1));
 % videoname=sprintf('%s\\%s_%s_%03d',metadata.folder,metadata.mouse,datestr(now,'yy-mm-dd'),metadata.trialnum);
