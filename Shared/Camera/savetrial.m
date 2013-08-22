@@ -1,6 +1,7 @@
 function savetrial(obj,event)
 % Load objects from root app data
 vidobj=getappdata(0,'vidobj');
+TDT=getappdata(0,'tdt');
 
 pause(1e-3)
 src.TriggerSource='Freerun';	% Switch back to free run mode so we get a preview
@@ -40,16 +41,13 @@ end
 metadata.eye.trialnum2=metadata.eye.trialnum2+1;
 setappdata(0,'metadata',metadata);
 
-% --- online spike saving, executed by timer ---
-etime1=round(1000*etime(clock,t0))/1000;
-tm1 = timer('TimerFcn',@online_savespk_to_memory, 'startdelay', max(0, 4-etime1));
-start(tm1);
 
-
-
-
-
-
+if TDT.GetTargetVal('ustim.RecEnable')
+	% --- online spike saving, executed by timer ---
+	etime1=round(1000*etime(clock,t0))/1000;
+	tm1 = timer('TimerFcn',@online_savespk_to_memory, 'startdelay', max(0, 4-etime1));
+	start(tm1);
+end
 
 
 
