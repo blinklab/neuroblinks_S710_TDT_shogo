@@ -57,6 +57,9 @@ end
 
 function testLoop()
 	% Do nothing other than delay for a little while
+    if VERBOSE
+        fprintf('Tested file %s.\n',basename)
+    end
 	pause(0.5);
 
 
