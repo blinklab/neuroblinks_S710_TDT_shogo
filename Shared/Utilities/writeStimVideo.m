@@ -1,7 +1,8 @@
 function writeStimVideo(data,metadata,fname,varargin)
-    % WRITESTIMVIDEO(DATA,METADATA,FNAME,{FRAMERATE})
+    % WRITESTIMVIDEO(DATA,METADATA,FNAME,{FRAMERATE,FORMAT})
     % Write stim video to avi file FNAME including stim marker boxes. Optionally specify framerate, otherwise the video will be written using
-    % the same frame rate as it was captured at.
+    % the same frame rate as it was captured at. You can also optionally specify the video format to use (Default is Motion JPEG AVI). If your 
+    % computer and Matlab version support it, MPEG-4 may give better compression ratios.
 
 if isempty(data)
     % Die gracefully
@@ -9,10 +10,16 @@ if isempty(data)
     return
 end
 
-if ~isempty(varargin)
+if length(varargin) >= 1
     fr=varargin{1};
 else
     fr=metadata.cam.fps;
+end
+
+if length(varargin) >= 2
+    fmt=varargin{2};
+else
+    fmt='Motion JPEG AVI';
 end
 
 
@@ -64,7 +71,7 @@ for i=1:t
     F(i).colormap=[]; 
 end
 
-writeObj=VideoWriter(fname);
+writeObj=VideoWriter(fname,fmt);
 set(writeObj,'FrameRate',fr);
 open(writeObj);
 

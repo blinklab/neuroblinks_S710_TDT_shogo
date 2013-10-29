@@ -3,6 +3,7 @@ function nosavetrial(obj,event)
 
 vidobj=getappdata(0,'vidobj');
 TDT=getappdata(0,'tdt');
+src.TriggerSource='Freerun';	% Switch back to free run mode so we get a preview
 pause(1e-3)
 data=getdata(vidobj,vidobj.FramesPerTrigger*(vidobj.TriggerRepeat + 1));
 % data=getdata(vidobj,vidobj.TriggerRepeat+1);

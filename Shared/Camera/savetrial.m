@@ -4,6 +4,7 @@ vidobj=getappdata(0,'vidobj');
 TDT=getappdata(0,'tdt');
 
 pause(1e-3)
+src.TriggerSource='Freerun';	% Switch back to free run mode so we get a preview
 % data=getdata(vidobj,vidobj.TriggerRepeat+1);
 data=getdata(vidobj,vidobj.FramesPerTrigger*(vidobj.TriggerRepeat + 1));
 % videoname=sprintf('%s\\%s_%s_%03d',metadata.folder,metadata.mouse,datestr(now,'yy-mm-dd'),metadata.trialnum);
@@ -25,7 +26,7 @@ if trials.savematadata
     save(videoname,'metadata')
     pause(2.0-metadata.stim.totaltime/1000) % wait for serial buffer of TDT
 else
-    save(videoname,'data','metadata')
+    save(videoname,'data','metadata','-v6')
     pause(0.3-metadata.stim.totaltime/1000) % wait for serial buffer of TDT
 end
 
