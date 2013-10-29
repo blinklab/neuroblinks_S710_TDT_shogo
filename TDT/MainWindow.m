@@ -22,7 +22,7 @@ function varargout = MainWindow(varargin)
 
 % Edit the above text to modify the response to help MainWindow
 
-% Last Modified by GUIDE v2.5 15-Jun-2013 13:11:38
+% Last Modified by GUIDE v2.5 29-Oct-2013 17:33:57
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -1358,4 +1358,21 @@ function edit_toneamp_CreateFcn(hObject, eventdata, handles)
 %       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in pushbutton_loadParams.
+function pushbutton_loadParams_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_loadParams (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+paramtable = getappdata(0,'paramtable');
+
+[paramfile,paramfilepath,filteridx] = uigetfile('*.csv');
+
+if paramfile & filteridx == 1 % The filterindex thing is a hack to make sure it's a csv file
+    paramtable.data=csvread(fullfile(paramfilepath,paramfile));
+    set(handles.uitable_params,'Data',paramtable.data);
+    setappdata(0,'paramtable',paramtable);
 end
