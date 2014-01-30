@@ -2,6 +2,10 @@ function online_savespk_to_memory(obj,event)
 %  callback function by timer obj
 if ~isappdata(0,'ttx'), return, end
 
+% If using multi channel spike data and there are no spikes on channel 1, this function will generate an error so 
+% uncomment the line below to return immediately
+% return
+
 % ---- spike data --------
 metadata=getappdata(0,'metadata');
 trials=getappdata(0,'trials');

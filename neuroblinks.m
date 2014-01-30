@@ -15,4 +15,4 @@ Launch
 % oldpath=addpath(genpath(fullfile(basedir,'Arduino')));
 % addpath(genpath(fullfile(basedir,'Shared')));
 
-% LaunchA
+% LaunchArduino

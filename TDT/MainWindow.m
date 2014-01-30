@@ -22,7 +22,7 @@ function varargout = MainWindow(varargin)
 
 % Edit the above text to modify the response to help MainWindow
 
-% Last Modified by GUIDE v2.5 29-Oct-2013 17:33:57
+% Last Modified by GUIDE v2.5 29-Oct-2013 18:37:22
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -57,7 +57,8 @@ src=getappdata(0,'src');
 % TDT=getappdata(0,'tdt');
 
 metadata.date=date;
-metadata.ts=[datenum(clock) 0]; % two element vector containing datenum at beginning of session and offset of current trial (in seconds) from beginning
+% two element vector containing datenum at beginning of session and offset of current trial (in seconds) from beginning
+metadata.ts=[datenum(clock) 0];     % convert ts(1) to string representation by datestr(ts(1))
 % metadata.mouse='Sxxx';
 metadata.TDTblockname='';
 metadata.folder=pwd; % For now use current folder as base; will want to change this later
@@ -409,6 +410,7 @@ ParamsWindow
 function pushbutton_quit_Callback(hObject, eventdata, handles)
 % Load objects from root app data
 TDT=getappdata(0,'tdt');
+TTX=getappdata(0,'ttx');
 vidobj=getappdata(0,'vidobj');
 ghandles=getappdata(0,'ghandles');
 metadata=getappdata(0,'metadata');
@@ -420,6 +422,7 @@ end
 
 try
     TDT.CloseConnection;
+    TTX.ReleaseServer;
     close(ghandles.TDTfig)
     delete(vidobj);
     
@@ -1375,4 +1378,21 @@ if paramfile & filteridx == 1 % The filterindex thing is a hack to make sure it'
     paramtable.data=csvread(fullfile(paramfilepath,paramfile));
     set(handles.uitable_params,'Data',paramtable.data);
     setappdata(0,'paramtable',paramtable);
+end
+
+
+% --- Executes on button press in togglebutton_recordContinuous.
+function togglebutton_recordContinuous_Callback(hObject, eventdata, handles)
+% hObject    handle to togglebutton_recordContinuous (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of togglebutton_recordContinuous
+
+if get(hObject,'value') == 1
+    src.TriggerSelector='AcquisitionStart'; % Not sure if this is correct; may need to be 'FrameStart' as well
+    src.TriggerSource='FixedRate';
+else
+    src.TriggerSelector='FrameStart';
+    src.TriggerSource='Freerun';
 end
