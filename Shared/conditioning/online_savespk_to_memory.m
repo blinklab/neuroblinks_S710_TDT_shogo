@@ -4,7 +4,7 @@ if ~isappdata(0,'ttx'), return, end
 
 % If using multi channel spike data and there are no spikes on channel 1, this function will generate an error so 
 % uncomment the line below to return immediately
-% return
+return
 
 % ---- spike data --------
 metadata=getappdata(0,'metadata');
