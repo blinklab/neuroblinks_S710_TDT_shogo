@@ -2,12 +2,13 @@ function TriggerStim(hObject, handles)
 % this components come from pushbutton_stim_Callback of MainWindow.m
 
 % Get stim params and pass to TDT
-refreshParams(hObject);
+% refreshParams(hObject);
 sendParamsToTDT(hObject)
 
 TDT=getappdata(0,'tdt');
 vidobj=getappdata(0,'vidobj');
 metadata=getappdata(0,'metadata');
+src=getappdata(0,'src');
 
 metadata.TDTtankname=TDT.GetTankName();
 stimmode=metadata.stim.type;
@@ -57,7 +58,11 @@ else
 end
 
 flushdata(vidobj); % Remove any data from buffer before triggering
-src.TriggerSource='Line1';  % Switch from free run to TTL mode
+% if isprop(src,'FrameStartTriggerSource')
+%     src.FrameStartTriggerSource = 'Line1';  % Switch from free run to TTL mode
+% else
+%     src.TriggerSource = 'Line1';
+% end
 start(vidobj)
 
 metadata.ts(2)=etime(clock,datevec(metadata.ts(1)));
@@ -140,25 +145,29 @@ if strcmpi(stimmode,'puff')
     end
 end
 
-% ---- display current trial data in conditioning ----
-if strcmpi(metadata.stim.type,'conditioning')
+
+% NOTE: had to temporarily comment out this part because it causes problems with the "auto off" code that turns off
+%       continuous mode when we reach the end of the trial table - SHANE
+%
+% % ---- display current trial data in conditioning ----
+% if strcmpi(metadata.stim.type,'conditioning')
     
-    trialvars=readTrialTable(metadata.eye.trialnum1+1);
-    csdur=trialvars(1);
-    csnum=trialvars(2);
-    isi=trialvars(3);
-    usdur=trialvars(4);
-    cstone=str2num(get(handles.edit_tone,'String'));
-    if length(cstone)<2, cstone(2)=0; end
+%     trialvars=readTrialTable(metadata.eye.trialnum1+1);
+%     csdur=trialvars(1);
+%     csnum=trialvars(2);
+%     isi=trialvars(3);
+%     usdur=trialvars(4);
+%     cstone=str2num(get(handles.edit_tone,'String'));
+%     if length(cstone)<2, cstone(2)=0; end
     
-    str2=[];
-    if ismember(csnum,[5 6]), 
-        str2=[' (' num2str(cstone(csnum-4)) ' Hz)'];
-    end
+%     str2=[];
+%     if ismember(csnum,[5 6]), 
+%         str2=[' (' num2str(cstone(csnum-4)) ' Hz)'];
+%     end
         
-    str1=sprintf('Next:  No %d,  CS ch %d%s,  ISI %d,  US %d',metadata.eye.trialnum1+1, csnum, str2, isi, usdur);
-    set(handles.text_disp_cond,'String',str1)
-end
+%     str1=sprintf('Next:  No %d,  CS ch %d%s,  ISI %d,  US %d',metadata.eye.trialnum1+1, csnum, str2, isi, usdur);
+%     set(handles.text_disp_cond,'String',str1)
+% end
 
 
 

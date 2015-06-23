@@ -1,10 +1,11 @@
 function sendParamsToTDT(hObject)
 
+refreshParams(hObject)
+
 % Load objects from root app data
 TDT=getappdata(0,'tdt'); 
 metadata=getappdata(0,'metadata');
 
-refreshParams(hObject)
 handles=guidata(hObject);
 
 % Pass pulse values for Camera to TDT - even if we're not actually recording to disk
@@ -38,36 +39,42 @@ end
 
 % Have to subtract 1 b/c TDT is zero-referenced and Matlab is
 % one-referenced
+% --- conditioning -----
+% Need conditional statement so we don't get an error if we're not doing conditioning so trial table hasn't been created
+% if strcmpi(metadata.stim.type,'conditioning')
+    if get(handles.checkbox_RX6,'Value'),
+        TDT.SetTargetVal('Stim.PreStimTime',metadata.cam.time(1)); 
+        TDT.SetTargetVal('Stim.CsDur',metadata.stim.c.csdur);
+        TDT.SetTargetVal('Stim.ISI',metadata.stim.c.isi);
+        TDT.SetTargetVal('Stim.UsDur',metadata.stim.c.usdur);
+        TDT.SetTargetVal('Stim.PuffMDelay',metadata.stim.c.puffdelay);
+        TDT.SetTargetVal('Stim.PuffDurM',metadata.stim.c.puffdur);
+        TDT.SetTargetVal('Stim.PuffSide',metadata.stim.p.side_value);
+    end
+    % --- behavioral stim by RZ5 ---- 
+    TDT.SetTargetVal('ustim.ITI',metadata.stim.c.ITI);
+    TDT.SetTargetVal('ustim.CsDur',metadata.stim.c.csdur);
+    csnum=metadata.stim.c.csnum;  cstonefreq=0;  cstoneamp=0;
+    if ismember(csnum,[5 6]),  
+        cstonefreq=min(metadata.stim.c.tonefreq(csnum-4), 40000);  
+        cstoneamp=metadata.stim.c.toneamp(csnum-4);
+        csnum=0; 
+    end
+    TDT.SetTargetVal('ustim.CSNum',csnum);
+    TDT.SetTargetVal('ustim.CSToneFreq',cstonefreq);
+    TDT.SetTargetVal('ustim.CSToneAmp',cstoneamp);
+    % csnum,cstonefreq,
 
-if get(handles.checkbox_RX6,'Value'),
-    TDT.SetTargetVal('Stim.PreStimTime',metadata.cam.time(1)); 
-    TDT.SetTargetVal('Stim.CsDur',metadata.stim.c.csdur);
-    TDT.SetTargetVal('Stim.ISI',metadata.stim.c.isi);
-    TDT.SetTargetVal('Stim.UsDur',metadata.stim.c.usdur);
-    TDT.SetTargetVal('Stim.PuffMDelay',metadata.stim.c.puffdelay);
-    TDT.SetTargetVal('Stim.PuffDurM',metadata.stim.c.puffdur);
-    TDT.SetTargetVal('Stim.PuffSide',metadata.stim.p.side_value);
-end
-% --- behavioral stim by RZ5 ---- 
-TDT.SetTargetVal('ustim.ITI',metadata.stim.c.ITI);
-TDT.SetTargetVal('ustim.CsDur',metadata.stim.c.csdur);
-csnum=metadata.stim.c.csnum;  cstonefreq=0;  cstoneamp=0;
-if ismember(csnum,[5 6]),  
-    cstonefreq=min(metadata.stim.c.tonefreq(csnum-4), 40000);  
-    cstoneamp=metadata.stim.c.toneamp(csnum-4);
-    csnum=0; 
-end
-TDT.SetTargetVal('ustim.CSNum',csnum);
-TDT.SetTargetVal('ustim.CSToneFreq',cstonefreq);
-TDT.SetTargetVal('ustim.CSToneAmp',cstoneamp);
-% csnum,cstonefreq,
+    TDT.SetTargetVal('ustim.ISI',metadata.stim.c.isi);
+    TDT.SetTargetVal('ustim.UsDur',metadata.stim.c.usdur);
+    % TDT.SetTargetVal('ustim.PuffMDelay',metadata.stim.c.puffdelay);
+    TDT.SetTargetVal('ustim.PuffDurM',metadata.stim.c.puffdur);
+% end
 
-TDT.SetTargetVal('ustim.ISI',metadata.stim.c.isi);
-TDT.SetTargetVal('ustim.UsDur',metadata.stim.c.usdur);
 TDT.SetTargetVal('ustim.PreStimTime',metadata.cam.time(1));
-% TDT.SetTargetVal('ustim.PuffMDelay',metadata.stim.c.puffdelay);
-TDT.SetTargetVal('ustim.PuffDurM',metadata.stim.c.puffdur);
 TDT.SetTargetVal('ustim.PuffSide',metadata.stim.p.side_value);
+TDT.SetTargetVal('ustim.PuffMDelay',metadata.stim.p.puffdelay);
+
 
 switch lower(metadata.stim.type)
     case 'electrical'

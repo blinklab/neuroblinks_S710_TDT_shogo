@@ -1,5 +1,6 @@
 function streamEyelid(hObject, handles)
-updaterate=0.015;   % ~67 Hz
+updaterate=0.033;   % 30 Hz
+% updaterate=0.1;   % 10 Hz
 
 % Load objects from root app data
 TDT=getappdata(0,'tdt');
@@ -30,13 +31,21 @@ try
         if d>0
             pause(d)        %   java.lang.Thread.sleep(d*1000);     %     drawnow
         else
-            % disp(sprintf('%s: Unable to sustain requested stream rate! Loop required %f seconds.',datestr(now,'HH:MM:SS'),t))
+            disp(sprintf('%s: Unable to sustain requested stream rate! Loop required %f seconds.',datestr(now,'HH:MM:SS'),t))
         end
     end
 catch
-    disp('Aborted eye streaming.')
-    set(handles.togglebutton_stream,'Value',0);
-    return
+    try % If it's a dropped frame, see if we can recover
+        handles.pwin=image(zeros(480,640),'Parent',handles.cameraAx);
+        preview(vidobj,handles.pwin);
+        guidata(hObject,handles)
+        streamEyelid(hObject, handles)
+        disp('Caught camera error')
+    catch   
+        disp('Aborted eye streaming.')
+        set(handles.togglebutton_stream,'Value',0);
+        return
+    end
 end
 
 

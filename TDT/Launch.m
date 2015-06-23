@@ -22,13 +22,15 @@ set(ghandles.TTXfig,'visible','off')
 
 %% Set TDT Params
 if TDT.GetSysMode < 1
+
     ok=TDT.SetTankName(tank);
     if ~ok
     	error('Cannot set tank name. Is OpenWorkbench running?')
     end
-    ok=TDT.SetSysMode(2);
+
+    ok=TDT.SetSysMode(1);
     if ~ok
-    	error('Cannot set TDT to Preview mode. Is OpenWorkbench running?')
+    	error('Cannot set TDT to Standby mode. Is OpenWorkbench running?')
     end
 else 
     tank=TDT.GetTankName();

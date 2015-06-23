@@ -22,7 +22,7 @@ function varargout = MainWindow(varargin)
 
 % Edit the above text to modify the response to help MainWindow
 
-% Last Modified by GUIDE v2.5 29-Oct-2013 18:37:22
+% Last Modified by GUIDE v2.5 22-May-2015 19:11:52
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -63,6 +63,7 @@ metadata.ts=[datenum(clock) 0];     % convert ts(1) to string representation by 
 metadata.TDTblockname='';
 metadata.folder=pwd; % For now use current folder as base; will want to change this later
 
+% NOTE: The next two vars should be set in initcam, not here
 metadata.cam.fps=src.AcquisitionFrameRateAbs; %in frames per second
 metadata.cam.thresh=0.125;
 metadata.cam.trialnum=1;
@@ -102,13 +103,20 @@ waitfor(h);
 
 pushbutton_StartStopPreview_Callback(handles.pushbutton_StartStopPreview, [], handles)
 
-% Create timer to check if we are recording every 5 seconds
+% Create timer to check if we are recording every 3 seconds
 % First delete old instances
 t=timerfind('Name','TDTcheckmodeTimer');
 delete(t)
-TDTcheckmodeTimer=timer('Name','TDTcheckmodeTimer','Period',5,'ExecutionMode','FixedRate',...
-    'TimerFcn',@TDTcheckmodetimer,'BusyMode','queue','StartDelay',5);
+TDTcheckmodeTimer=timer('Name','TDTcheckmodeTimer','Period',3,'ExecutionMode','FixedRate',...
+    'TimerFcn',@TDTcheckmodetimer,'BusyMode','queue','StartDelay',3);
 start(TDTcheckmodeTimer);
+
+% Set up timer for handling Thomas Drive log
+t=timerfind('Name','ThomasDepthTimer');
+delete(t)
+ThomasDepthTimer=timer('Name','ThomasDepthTimer','Period',10,'ExecutionMode','FixedRate',...
+    'TimerFcn',@WriteThomasDepth,'BusyMode','queue','StartDelay',10);
+start(ThomasDepthTimer)
 
 
 if isappdata(0,'paramtable')
@@ -433,6 +441,11 @@ try
     t=timerfind('Name','TDTcheckmodeTimer');
     stop(t);
     delete(t);
+
+    t=timerfind('Name','ThomasDepthTimer');
+    stop(t);
+    delete(t)
+
 catch err
     warning(err.identifier,'Problem cleaning up objects. You may need to do it manually.')
 end
@@ -476,7 +489,7 @@ switch lower(metadata.stim.type)
         set(handles.uipanel_puff,'BackgroundColor',[245 249 253]/255); % light blue
 end   
 resetStimTrials()
-refreshParams(hObject);
+% refreshParams(hObject);
 sendParamsToTDT(hObject);
 
 
@@ -957,7 +970,7 @@ function pushbutton_CalbEye_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Get stim params and pass to TDT
-refreshParams(hObject);
+% refreshParams(hObject);
 sendParamsToTDT(hObject)
 
 TDT=getappdata(0,'tdt');

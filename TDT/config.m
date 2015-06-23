@@ -4,6 +4,11 @@
 % basedir='D:\shane\matlab\neuroblinks v 1.1';
 tank='optoelectrophys'; % The tank should be registered using TankMon
 
+% Specific to using Thomas Drive
+metadata.microdrive.LogFolder = 'C:\shane\data\experiment logs\thomas logs';
+% Need to make this something that can be changed online but I don't have time now
+metadata.microdrive.offsets = [0,0,0,0,0,0,0];
+
 % If Neuroblinks is launched from the root directory of the mouse, make a new directory for the session, otherwise leave that up to the user
 cwd=regexp(pwd,'\\','split');
 if regexp(cwd{end},'[A-Z]\d\d\d')  % Will match anything of the form LDDD, where L is single uppercase letter and DDD is a seq of 3 digits
@@ -59,7 +64,7 @@ else
 button=questdlg('Do you want to launch TDT?');
 if strcmpi(button,'Yes')
     winopen(sprintf('%s\\TDT\\private\\TDTFiles\\simultaneous opto- microstim and recording.wsp',basedir));
-    pause(3);
+    pause(5);
 end
 % winopen('C:\Program Files (x86)\DinoCapture 2.0\DinoCapture.exe');
 % winopen('C:\Program Files\Sublime Text 2\sublime_text.exe');

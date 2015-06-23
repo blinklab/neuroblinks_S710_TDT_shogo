@@ -6,6 +6,12 @@ metadata=getappdata(0,'metadata');
 handles=guidata(hObject);
 trials=getappdata(0,'trials');
 
+val=get(handles.popupmenu_stimtype,'Value');
+str=get(handles.popupmenu_stimtype,'String');
+metadata.stim.type=str{val};
+
+stimmode=metadata.stim.type;
+
 trials.savematadata=get(handles.checkbox_save_metadata,'Value');
 
 metadata.stim.e.freq=str2double(get(handles.edit_estimfreq,'String'));
@@ -27,29 +33,26 @@ metadata.stim.c.puffdelay=str2double(get(handles.edit_puffdelay,'String'));
 metadata.stim.c.puffdur=str2double(get(handles.edit_puffdur,'String'));
 
 % --- conditioning -----
-trialvars=readTrialTable(metadata.eye.trialnum1);
-metadata.stim.c.csdur=trialvars(1);
-metadata.stim.c.csnum=trialvars(2);
-metadata.stim.c.isi=trialvars(3);
-metadata.stim.c.usdur=trialvars(4);
-metadata.stim.c.tonefreq=str2num(get(handles.edit_tone,'String'))*1000;
-if length(metadata.stim.c.tonefreq)<2, metadata.stim.c.tonefreq(2)=0; end
-metadata.stim.c.toneamp=str2num(get(handles.edit_toneamp,'String'));
-if length(metadata.stim.c.toneamp)<2, metadata.stim.c.toneamp(2)=0; end
+% Need conditional statement so we don't get an error if we're not doing conditioning so trial table hasn't been created
+% if strcmpi(stimmode,'conditioning')
+    trialvars=readTrialTable(metadata.eye.trialnum1);
+    metadata.stim.c.csdur=trialvars(1);
+    metadata.stim.c.csnum=trialvars(2);
+    metadata.stim.c.isi=trialvars(3);
+    metadata.stim.c.usdur=trialvars(4);
+    metadata.stim.c.tonefreq=str2num(get(handles.edit_tone,'String'))*1000;
+    if length(metadata.stim.c.tonefreq)<2, metadata.stim.c.tonefreq(2)=0; end
+    metadata.stim.c.toneamp=str2num(get(handles.edit_toneamp,'String'));
+    if length(metadata.stim.c.toneamp)<2, metadata.stim.c.toneamp(2)=0; end
 
-metadata.stim.c.ITI=str2double(get(handles.edit_ITI,'String'));
+    metadata.stim.c.ITI=str2double(get(handles.edit_ITI,'String'));
+% end
 
 puffsidestring={'ipsi' 'contra'};
 metadata.stim.p.side_value=get(handles.radiobutton_contra,'Value');
 metadata.stim.p.side=puffsidestring{metadata.stim.p.side_value+1};
 metadata.stim.p.puffdelay=str2double(get(handles.edit_puffdelay,'String'));
 metadata.stim.p.puffdur=str2double(get(handles.edit_puffdur,'String'));
-
-val=get(handles.popupmenu_stimtype,'Value');
-str=get(handles.popupmenu_stimtype,'String');
-metadata.stim.type=str{val};
-
-stimmode=metadata.stim.type;
 
 switch lower(stimmode)
     case 'none'

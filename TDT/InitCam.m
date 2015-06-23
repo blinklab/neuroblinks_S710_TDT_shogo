@@ -15,7 +15,8 @@ src.GainRaw=12;		% The name changed in Matlab 2013a
 % src.PacketSize = '9014';
 % src.PacketSize = 9014;  % Matlab 2013a uses integer value
 src.PacketSize = 8228;	% Matlab 2013a uses integer value
-src.StreamBytesPerSecond=124e6; % Set based on AVT's suggestion
+% src.StreamBytesPerSecond=124e6; % Set based on AVT's suggestion
+src.StreamBytesPerSecond=110e6; % Set based on AVT's suggestion
 vidobj.LoggingMode = 'memory'; vidobj.FramesPerTrigger=1;
 src.AcquisitionFrameRateAbs=200;
 
