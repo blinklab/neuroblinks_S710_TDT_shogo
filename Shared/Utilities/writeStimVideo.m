@@ -33,8 +33,8 @@ switch lower(metadata.stim.type)
         % do nothing for now
         stim=zeros(m,n,3,t,'uint8');
     case 'puff'
-        stfrm=round(metadata.cam.time(1)./1000.*metadata.cam.fps);
-        enfrm=round(metadata.stim.totaltime./1000.*metadata.cam.fps);
+        stfrm=round((metadata.cam.time(1)+metadata.stim.p.puffdelay)./1000.*metadata.cam.fps);
+        enfrm=round((metadata.cam.time(1)+metadata.stim.p.puffdur)./1000.*metadata.cam.fps);
         stim=zeros(m,n,3,t,'uint8');
         stim(400:449,450:499,2,stfrm:stfrm+enfrm)=255;
     case 'electrical'       
@@ -63,6 +63,14 @@ switch lower(metadata.stim.type)
         stim=zeros(m,n,3,t,'uint8');
         stim(400:449,500:549,1,stfrme:stfrme+enfrme)=255;
         stim(400:449,550:599,3,stfrml:stfrml+enfrml)=255;
+    case 'optocondition'      
+        stfrmc=round((metadata.cam.time(1)+metadata.stim.l.delay)./1000.*metadata.cam.fps);
+        enfrmc=round(metadata.stim.l.traindur./1000.*metadata.cam.fps);
+        stfrmu=round((metadata.cam.time(1)+metadata.stim.p.puffdelay)./1000.*metadata.cam.fps);
+        enfrmu=round((metadata.cam.time(1)+metadata.stim.p.puffdur)./1000.*metadata.cam.fps);
+        stim=zeros(m,n,3,t,'uint8');
+        stim(400:449,500:549,3,stfrmc:stfrmc+enfrmc)=255;
+        stim(400:449,550:599,2,stfrmu:stfrmu+enfrmu)=255;
 end
 
 
