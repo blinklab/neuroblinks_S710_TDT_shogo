@@ -16,6 +16,12 @@ DEFAULTRIG = 1;
 % Rig specific settings
 ALLOWEDDEVICES = {'arduino','tdt'};
 
+%============ Specific to using Thomas Drive ============
+metadata.microdrive.LogFolder = 'C:\shane\data\experiment logs\thomas logs';
+% Need to make this something that can be changed online but I don't have time now
+metadata.microdrive.offsets = [0,0,0,0,0,0,0];
+%========================================================
+
 % The ALLOWEDCAMS and ARDUINO_IDS cell arrays are used to match the right Arduino to the
 % right camera on computers that are controlling more than one rig. If you are using the 
 % TDT version or are only using a single camera/Arduino you can ignore them. 
@@ -36,7 +42,8 @@ metadata.cam.recdurA=1000;
 
 % --- camera settings ----
 % Value is in microseconds and should be slightly less than interframe interval, e.g. 1/200*1e6-100 for 200 FPS
-metadata.cam.init_ExposureTime=4900;
+metadata.cam.init_ExposureTime = 4900;
+metadata.cam.init_GainRaw = 12;
 
 % TDT tank -- not necessary for Arduino version
 % The tank should be registered using TankMon (really only matters for TDT version)
@@ -44,7 +51,17 @@ tank='conditioning';
 
 % GUI
 % -- specify the location of bottomleft corner of MainWindow & AnalysisWindow  --
-ghandles.pos_mainwin=[8,450];     ghandles.size_mainwin=[840 720]; 
+switch lower(DEFAULTDEVICE)
+    case 'tdt'
+        ghandles.pos_mainwin=[8,450];     ghandles.size_mainwin=[840 720]; 
+        ghandles.pos_oneanawin=[8,48];    ghandles.size_oneanawin=[840,364];  
+    case 'arduino'
+        ghandles.pos_mainwin=[5,550];      ghandles.size_mainwin=[840 600];  
+        ghandles.pos_oneanawin=[5 45];    ghandles.size_oneanawin=[560 380];  
+end
 ghandles.pos_anawin=[470 50];     ghandles.size_anawin=[1030 840]; 
-ghandles.pos_oneanawin=[8,48];    ghandles.size_oneanawin=[840,364];   
-ghandles.pos_lfpwin=[470 50];    ghandles.size_lfpwin=[600 380];
+ghandles.pos_lfpwin=[470 50];     ghandles.size_lfpwin=[600 380];
+
+ghandles.shift_for_2nd_rig=[0 -400];
+ 
+

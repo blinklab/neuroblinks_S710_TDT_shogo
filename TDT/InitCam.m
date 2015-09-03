@@ -22,9 +22,9 @@ src.ExposureTimeAbs = metadata.cam.init_ExposureTime;
 % multiplying the pixel values and can be done after the video has been
 % acquired if needed. 
 if isprop(src,'AllGainRaw')
-    src.AllGainRaw=12;
+    src.AllGainRaw=metadata.cam.init_GainRaw;
 else
-    src.GainRaw=12;
+    src.GainRaw=metadata.cam.init_GainRaw;
 end
 
 % src.NetworkPacketSize = '9014';
