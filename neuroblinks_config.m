@@ -4,8 +4,8 @@
 % If you specify a default device here you can launch neuroblinks by simply typing "neuroblinks"
 % at the command prompt without needing to specify any arguments. To use a non-default device, 
 % launch neuroblinks as for example "neuroblinks('arduino')". 
-DEFAULTDEVICE = 'arduino';
-% DEFAULTDEVICE = 'tdt';
+% DEFAULTDEVICE = 'arduino';
+DEFAULTDEVICE = 'tdt';
 
 % Rig number corresponds to the index into ALLOWEDCAMS and ARDUINO_IDS, which is how we match the 
 % correct Arduino to the correct camera on multi-rig systems. If you're just using a single rig
