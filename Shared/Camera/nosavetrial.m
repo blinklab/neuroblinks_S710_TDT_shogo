@@ -1,9 +1,9 @@
-function nosavetrial(obj,event)
+function nosavetrial()
 % We set a callback function and trigger camera anyway so we can get instant replay
 
 vidobj=getappdata(0,'vidobj');
-TDT=getappdata(0,'tdt');
-src.TriggerSource='Freerun';	% Switch back to free run mode so we get a preview
+
+% src.TriggerSource='Freerun';	% Switch back to free run mode so we get a preview
 pause(1e-3)
 data=getdata(vidobj,vidobj.FramesPerTrigger*(vidobj.TriggerRepeat + 1));
 % data=getdata(vidobj,vidobj.TriggerRepeat+1);
@@ -24,11 +24,11 @@ end
 metadata.eye.trialnum2=metadata.eye.trialnum2+1;
 setappdata(0,'metadata',metadata);
 
-
-if TDT.GetTargetVal('ustim.RecEnable')
-	% --- online spike saving, executed by timer ---
-	tm1 = timer('TimerFcn',@online_savespk_to_memory, 'startdelay', 4);
-	start(tm1);
-end
+% TDT=getappdata(0,'tdt');
+% if TDT.GetTargetVal('ustim.RecEnable')
+% 	% --- online spike saving, executed by timer ---
+% 	tm1 = timer('TimerFcn',@online_savespk_to_memory, 'startdelay', 4);
+% 	start(tm1);
+% end
 
 

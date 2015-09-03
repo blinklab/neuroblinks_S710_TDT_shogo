@@ -40,5 +40,5 @@ button=questdlg('Do you want to launch TDT?');
 if strcmpi(button,'Yes')
 %     winopen(sprintf('%s\\private\\TDTFiles\\simultaneous opto- microstim and recording.wsp',basedir));
     winopen(sprintf('%s\\private\\TDTFiles\\TDTFiles.wsp',basedir));
-    pause(5);
+    pause(7);
 end

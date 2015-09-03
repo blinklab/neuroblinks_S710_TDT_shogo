@@ -50,11 +50,11 @@ if get(handles.checkbox_record,'Value') == 1
             end
         end
     end
-    vidobj.StopFcn=@savetrial;
-    incrementStimTrial()
+    vidobj.StopFcn=@endOfTrial;
+%     incrementStimTrial()
 else
     TDT.SetTargetVal('ustim.CamTrial',0);   % Send TDT trial number of zero 
-    vidobj.StopFcn=@nosavetrial;  
+    vidobj.StopFcn=@endOfTrial;  
 end
 
 flushdata(vidobj); % Remove any data from buffer before triggering
@@ -172,8 +172,8 @@ end
 
 
 
-function incrementStimTrial()
-trials=getappdata(0,'trials');
-trials.stimnum=trials.stimnum+1;
-setappdata(0,'trials',trials);
+% function incrementStimTrial()
+% trials=getappdata(0,'trials');
+% trials.stimnum=trials.stimnum+1;
+% setappdata(0,'trials',trials);
 
