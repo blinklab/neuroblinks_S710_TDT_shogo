@@ -1,13 +1,14 @@
-% clear
+function Launch(rig,cam)
+% Note that "rig" argument is not currently used for TDT option
 
-config;
-
+neuroblinks_config;	% Per user settings
+configure;
 
 setappdata(0,'paramtable',paramtable);
 setappdata(0,'metadata',metadata);
 
 %% Initialize Camera
-InitCam(1); % src and vidobj are now saved as root app data so no global vars
+InitCam(cam,metadata.cam.recdurA); % src and vidobj are now saved as root app data so no global vars
 
 %% Initialize TDT interface
 ghandles.TDTfig=figure;
@@ -22,15 +23,13 @@ set(ghandles.TTXfig,'visible','off')
 
 %% Set TDT Params
 if TDT.GetSysMode < 1
-
     ok=TDT.SetTankName(tank);
     if ~ok
     	error('Cannot set tank name. Is OpenWorkbench running?')
     end
-
-    ok=TDT.SetSysMode(1);
+    ok=TDT.SetSysMode(2);
     if ~ok
-    	error('Cannot set TDT to Standby mode. Is OpenWorkbench running?')
+    	error('Cannot set TDT to Preview mode. Is OpenWorkbench running?')
     end
 else 
     tank=TDT.GetTankName();
