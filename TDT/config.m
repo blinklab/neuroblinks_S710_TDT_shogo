@@ -3,7 +3,7 @@
 
 % basedir='D:\shane\matlab\neuroblinks v 1.1';
 tank='optoelectrophys'; % The tank should be registered using TankMon
-
+tank='conditioning';
 % Specific to using Thomas Drive
 metadata.microdrive.LogFolder = 'C:\shane\data\experiment logs\thomas logs';
 % Need to make this something that can be changed online but I don't have time now
@@ -63,7 +63,8 @@ else
 % If you comment out the TDT line you must have OpenWorkbench already running when you start Neuroblinks
 button=questdlg('Do you want to launch TDT?');
 if strcmpi(button,'Yes')
-    winopen(sprintf('%s\\TDT\\private\\TDTFiles\\simultaneous opto- microstim and recording.wsp',basedir));
+%     winopen(sprintf('%s\\TDT\\private\\TDTFiles\\simultaneous opto- microstim and recording.wsp',basedir));
+    winopen(sprintf('%s\\TDT\\private\\TDTFiles\\TDTFiles.wsp',basedir));
     pause(5);
 end
 % winopen('C:\Program Files (x86)\DinoCapture 2.0\DinoCapture.exe');
