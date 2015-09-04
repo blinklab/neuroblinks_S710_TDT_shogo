@@ -25,7 +25,16 @@ set(ghandles.TTXfig,'visible','off')
 if TDT.GetSysMode < 1
     ok=TDT.SetTankName(tank);
     if ~ok
-    	error('Cannot set tank name. Is OpenWorkbench running?')
+        disp('Cannot set tank name. Is OpenWorkbench running?');  i=0;
+        while i<3 & ~ok
+            disp('The system try to find TDT, again....')
+            pause(2)
+            ok=TDT.SetTankName(tank);
+            i=i+1;
+        end
+        if ~ok
+            error('Cannot set tank name. Is OpenWorkbench running?')
+        end
     end
     ok=TDT.SetSysMode(2);
     if ~ok

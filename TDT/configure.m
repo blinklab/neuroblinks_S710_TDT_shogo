@@ -33,12 +33,4 @@ setappdata(0,'paramtable',paramtable);
 setappdata(0,'metadata',metadata);
 pause(0.3); 
 
-% Optional support programs to be launched automatically.
-% Add more here if you want
-button=questdlg('Do you want to launch TDT?');
-[basedir,mfile,ext]=fileparts(mfilename('fullpath'));
-if strcmpi(button,'Yes')
-%     winopen(sprintf('%s\\private\\TDTFiles\\simultaneous opto- microstim and recording.wsp',basedir));
-    winopen(sprintf('%s\\private\\TDTFiles\\TDTFiles.wsp',basedir));
-    pause(7);
-end
+
