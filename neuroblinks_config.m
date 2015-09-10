@@ -29,7 +29,7 @@ metadata.microdrive.offsets = [0,0,0,0,0,0,0];
 % e.g. ALLOWEDCAMS = {'02-2020C-07321','02-2020C-07420'};
 % If you only plan to use one camera you can leave it as a blank string as long as you 
 % set the variable "cam" to 1 on the "neuroblinks.m" file.
-ALLOWEDCAMS_2014a = {'02-2020C-06976','0'};
+ALLOWEDCAMS_2014a = {'02-2020C-06976'};
 
 %%%%%%%%%%%% This is temporal solution (this should be fixed in future) %%%%%%%%%%%%%%%%%%%
 % check mameras by imaqtool. If the 1st camera in imaqtool was consistent
