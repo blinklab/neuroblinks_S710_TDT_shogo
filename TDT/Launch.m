@@ -26,9 +26,19 @@ if TDT.GetSysMode < 1
     ok=TDT.SetTankName(tank);
     if ~ok
         disp('Cannot set tank name. Is OpenWorkbench running?');  i=0;
-        while i<3 & ~ok
+        while i<10 & ~ok
             disp('The system try to find TDT, again....')
-            pause(2)
+            pause(1)
+            
+            ghandles.TDTfig=figure;
+            TDT=actxcontrol('TDevAcc.X', [0 0 0 0],ghandles.TDTfig);
+            set(ghandles.TDTfig,'Visible','off');
+            TDT.ConnectServer('Local'); %Open a TDT Connection
+            
+            ghandles.TTXfig=figure;
+            TTX = actxcontrol('TTank.X', [0 0 0 0],ghandles.TTXfig);
+            set(ghandles.TTXfig,'visible','off')
+            
             ok=TDT.SetTankName(tank);
             i=i+1;
         end
