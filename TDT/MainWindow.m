@@ -77,6 +77,7 @@ metadata.stim.type=typestring{get(handles.popupmenu_stimtype,'Value')};
 metadata.cam.time(1)=str2double(get(handles.edit_pretime,'String'));
 metadata.cam.time(3)=str2double(get(handles.edit_posttime,'String'));
 
+metadata.cam.cal=0;
 metadata.cam.calib_offset=0;
 metadata.cam.calib_scale=1;
 % metadata.stim.c.table=get(handles.table_condition,'Data');
@@ -249,24 +250,39 @@ function pushbutton_StartStopPreview_Callback(hObject, eventdata, handles)
 
 vidobj=getappdata(0,'vidobj');
 metadata=getappdata(0,'metadata');
-% ROI=vidobj.ROIposition;
-%   if ROI(3)~=480 || ROI(4)~=640
-%      % Set ROI
-% %      SetRoi;
-%   end
-metadata.cam.roi = vidobj.ROIposition;
+% % ROI=vidobj.ROIposition;
+% %   if ROI(3)~=480 || ROI(4)~=640
+% %      % Set ROI
+% % %      SetRoi;
+% %   end
+% metadata.cam.roi = vidobj.ROIposition;
+
+if ~isfield(metadata.cam,'fullsize')
+    metadata.cam.fullsize = [0 0 640 480];
+end
+metadata.cam.vidobj_ROIposition=vidobj.ROIposition;
 
 % Start/Stop Camera
 if strcmp(get(handles.pushbutton_StartStopPreview,'String'),'Start Preview')
-% Camera is off. Change button string and start camera.
-set(handles.pushbutton_StartStopPreview,'String','Stop Preview')
-%Send camera preview to GUI
-handles.pwin=image(zeros(480,640),'Parent',handles.cameraAx);
-preview(vidobj,handles.pwin);
+    % Camera is off. Change button string and start camera.
+    set(handles.pushbutton_StartStopPreview,'String','Stop Preview')
+    %Send camera preview to GUI
+    imx=metadata.cam.vidobj_ROIposition(1)+[1:metadata.cam.vidobj_ROIposition(3)];
+    imy=metadata.cam.vidobj_ROIposition(2)+[1:metadata.cam.vidobj_ROIposition(4)];
+    handles.pwin=image(imx,imy,zeros(metadata.cam.vidobj_ROIposition([4 3])), 'Parent',handles.cameraAx);
+    
+    preview(vidobj,handles.pwin);
+    set(handles.cameraAx,'XLim', 0.5+metadata.cam.fullsize([1 3])),
+    set(handles.cameraAx,'YLim', 0.5+metadata.cam.fullsize([2 4])),
+    hp=findobj(handles.cameraAx,'Tag','roipatch');  delete(hp)
+    if isfield(handles,'XY')
+        handles.roipatch=patch(handles.XY(:,1),handles.XY(:,2),'g','FaceColor','none','EdgeColor','g','Tag','roipatch');
+    end
+    set(handles.cameraAx,'YDir','reverse')
 else
-% Camera is on. Stop camera and change button string.
-set(handles.pushbutton_StartStopPreview,'String','Start Preview')
-closepreview(vidobj);
+    % Camera is on. Stop camera and change button string.
+    set(handles.pushbutton_StartStopPreview,'String','Start Preview')
+    closepreview(vidobj);
 end
 
 setappdata(0,'metadata',metadata);
@@ -299,10 +315,11 @@ function pushbutton_setROI_Callback(hObject, eventdata, handles)
 
 % Load objects from root app data
 % TDT=getappdata(0,'tdt');
-vidobj=getappdata(0,'vidobj');metadata=getappdata(0,'metadata');
+vidobj=getappdata(0,'vidobj');   metadata=getappdata(0,'metadata');
 
 if isfield(metadata.cam,'winpos')
     winpos=metadata.cam.winpos;
+    winpos(1:2)=winpos(1:2)+metadata.cam.vidobj_ROIposition(1:2);
 else
     winpos=[0 0 640 480];
 end
@@ -317,7 +334,9 @@ setPositionConstraintFcn(h,fcn);
 
 % metadata.cam.winpos=round(wait(h));
 XY=round(wait(h));  % only use for imellipse
-metadata.cam.winpos=getPosition(h);
+% metadata.cam.winpos=getPosition(h);
+metadata.cam.winpos=round(getPosition(h));
+metadata.cam.winpos(1:2)=metadata.cam.winpos(1:2)-metadata.cam.vidobj_ROIposition(1:2);
 metadata.cam.mask=createMask(h);
 
 wholeframe=getsnapshot(vidobj);
@@ -326,16 +345,16 @@ eyeframe=binframe.*metadata.cam.mask;
 metadata.cam.pixelpeak=sum(sum(eyeframe));
 
 
-xmin=metadata.cam.winpos(1);
-ymin=metadata.cam.winpos(2);
-width=metadata.cam.winpos(3);
-height=metadata.cam.winpos(4);
-
-% Save indices that delineate border of ROI
-handles.x1=ceil(metadata.cam.winpos(1));
-handles.x2=floor(metadata.cam.winpos(1)+metadata.cam.winpos(3));
-handles.y1=ceil(metadata.cam.winpos(2));
-handles.y2=floor(metadata.cam.winpos(2)+metadata.cam.winpos(4));
+% xmin=metadata.cam.winpos(1);
+% ymin=metadata.cam.winpos(2);
+% width=metadata.cam.winpos(3);
+% height=metadata.cam.winpos(4);
+% 
+% % Save indices that delineate border of ROI
+% handles.x1=ceil(metadata.cam.winpos(1));
+% handles.x2=floor(metadata.cam.winpos(1)+metadata.cam.winpos(3));
+% handles.y1=ceil(metadata.cam.winpos(2));
+% handles.y2=floor(metadata.cam.winpos(2)+metadata.cam.winpos(4));
 
 hp=findobj(handles.cameraAx,'Tag','roipatch');
 delete(hp)
@@ -343,6 +362,7 @@ delete(hp)
 % XY=getVertices(h);
 delete(h);
 handles.roipatch=patch(XY(:,1),XY(:,2),'g','FaceColor','none','EdgeColor','g','Tag','roipatch');
+handles.XY=XY;
 
 setappdata(0,'metadata',metadata);
 guidata(hObject,handles)
@@ -906,19 +926,54 @@ metadata=getappdata(0,'metadata');
 
 if get(hObject,'Value')
     % Turn on high frame rate mode
-    vidobj.ROIposition=metadata.cam.winpos;
-%     src.AcquisitionFrameRateAbs=300;
-    metadata.cam.fps=500;
-    src.ExposureTimeAbs = 1900;
-    src.AllGainRaw=24;
+    sug_extime=1900;
+    sug_gain=metadata.cam.init_GainRaw+round(20*log10(metadata.cam.init_ExposureTime/sug_extime));
+    dlgans=inputdlg({'Frame rate','Exposure Time','Gain (+20*log10)'},'Frame rate',1,{'500',num2str(sug_extime),num2str(sug_gain)});
+    if isempty(dlgans)
+        set(hObject,'Value',0);     return;
+    elseif isempty(dlgans{1})|isempty(dlgans{2})|isempty(dlgans{3})
+        set(hObject,'Value',0);     return;
+    elseif isnan(str2double(dlgans{1})+str2double(dlgans{2})+str2double(dlgans{3}))
+        set(hObject,'Value',0);     return;
+    else
+        metadata.cam.fps=str2double(dlgans{1});
+        src.ExposureTimeAbs = str2double(dlgans{2});
+        if isprop(src,'AllGainRaw')
+            src.AllGainRaw=str2double(dlgans{3});
+        else
+            src.GainRaw=str2double(dlgans{3});
+        end
+    end
+    metadata.cam.vidobj_ROIposition=max(metadata.cam.winpos+[-15 0 30 0],[0 0 0 0]);
+    vidobj.ROIposition=metadata.cam.vidobj_ROIposition;
+    
+    % --- size fit for roi and mask ----
+    vidroi_x=metadata.cam.vidobj_ROIposition(1)+[1:metadata.cam.vidobj_ROIposition(3)];
+    vidroi_y=metadata.cam.vidobj_ROIposition(2)+[1:metadata.cam.vidobj_ROIposition(4)];
+    metadata.cam.mask = metadata.cam.mask(vidroi_y, vidroi_x);
+    metadata.cam.winpos(1:2)=metadata.cam.winpos(1:2)-metadata.cam.vidobj_ROIposition(1:2);
 else
     % Turn off high frame rate mode
-    vidobj.ROIposition=metadata.cam.roi;
-%     src.AcquisitionFrameRateAbs=200;
+    vidobj.ROIposition=metadata.cam.fullsize;
     metadata.cam.fps=200;
-    src.ExposureTimeAbs = 4900;
-    src.AllGainRaw=12;
+    src.ExposureTimeAbs = metadata.cam.init_ExposureTime;
+%     src.AllGainRaw=metadata.cam.init_AllGainRaw;
+    if isprop(src,'AllGainRaw')
+        src.AllGainRaw=metadata.cam.init_GainRaw;
+    else
+        src.GainRaw=metadata.cam.init_GainRaw;
+    end
+    % --- size fit for roi and mask ----
+    mask0=metadata.cam.mask; s_mask0=size(mask0);
+    metadata.cam.mask = false(metadata.cam.fullsize([4 3]));
+    metadata.cam.mask(metadata.cam.vidobj_ROIposition(2)+[1:s_mask0(1)], metadata.cam.vidobj_ROIposition(1)+[1:s_mask0(2)])=mask0;
+    metadata.cam.winpos(1:2)=metadata.cam.winpos(1:2)+metadata.cam.vidobj_ROIposition(1:2);
+    metadata.cam.vidobj_ROIposition=metadata.cam.fullsize;
 end
+
+pushbutton_StartStopPreview_Callback(handles.pushbutton_StartStopPreview, [], handles)
+pause(0.02)
+pushbutton_StartStopPreview_Callback(handles.pushbutton_StartStopPreview, [], handles)
 
 setappdata(0,'vidobj',vidobj);
 setappdata(0,'src',src);

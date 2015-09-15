@@ -57,9 +57,11 @@ metadata=getappdata(0,'metadata');
 % Choose default command line output for ThreshWindowWithPuff
 handles.output = hObject;
 
-handles.x1=ceil(metadata.cam.winpos(1));
+% handles.x1=ceil(metadata.cam.winpos(1));
+handles.x1=floor(metadata.cam.winpos(1))+1;
 handles.x2=floor(metadata.cam.winpos(1)+metadata.cam.winpos(3));
-handles.y1=ceil(metadata.cam.winpos(2));
+% handles.y1=ceil(metadata.cam.winpos(2));
+handles.y1=floor(metadata.cam.winpos(2))+1;
 handles.y2=floor(metadata.cam.winpos(2)+metadata.cam.winpos(4));
 
 set(handles.edit_eyelidThresh,'String',num2str(round(metadata.cam.thresh*256)));
@@ -245,7 +247,8 @@ metadata.cam.calib_offset=calib_offset;  metadata.cam.calib_scale=calib_scale;
 setappdata(0,'metadata',metadata);
 
 fprintf('calib_offset = %d.  calib_scale = %d.\n',calib_offset, calib_scale)
-fprintf('thres = %d.\n', round(metadata.cam.thresh*256))
+fprintf('thresh = %d.\n', round(metadata.cam.thresh*256))
+
 
 videoname=sprintf('%s\\%s_calib',metadata.folder,metadata.TDTblockname);
 save(videoname,'data','metadata')    
