@@ -48,7 +48,7 @@ metadata.cam.recdurA=1000;
 
 % --- camera settings ----
 % Value is in microseconds and should be slightly less than interframe interval, e.g. 1/200*1e6-100 for 200 FPS
-metadata.cam.init_ExposureTime = 4900;
+metadata.cam.init_ExposureTime = 1900;
 metadata.cam.init_GainRaw = 12;
 
 % TDT tank -- not necessary for Arduino version
