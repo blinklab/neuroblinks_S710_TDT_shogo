@@ -4,7 +4,8 @@ if ~isappdata(0,'ttx'), return, end
 
 % If using multi channel spike data and there are no spikes on channel 1, this function will generate an error so 
 % uncomment the line below to return immediately
-return
+
+% return
 
 % ---- spike data --------
 metadata=getappdata(0,'metadata');
@@ -12,10 +13,26 @@ trials=getappdata(0,'trials');
 
 TTX=getappdata(0,'ttx');
 
-if isfield(trials,'spk'), length_trials_spk=length(trials.spk);
-else length_trials_spk=0;  end
+if isfield(trials,'spk'), 
+    length_trials_spk=length(trials.spk);
+    if length_trials_spk~=0, 
+    if sum(isnan(trials.spk(length_trials_spk).ts_interval)),
+        for tnum=length_trials_spk:-1:1;
+            if sum(isnan(trials.spk(tnum).ts_interval)),
+                length_trials_spk=tnum-1;
+            elseif max(trials.spk(tnum).time)<300
+                length_trials_spk=tnum-1;
+            else
+                continue,
+            end
+        end
+    end
+    end
+else, length_trials_spk=0;  end
 
-if length_trials_spk>metadata.eye.trialnum2+3, trials.spk=[]; end
+
+
+if length_trials_spk>metadata.eye.trialnum2+2, trials.spk=[]; end
 
 ok=TTX.SelectBlock(metadata.TDTblockname);
 if ~ok
@@ -24,7 +41,9 @@ end
 
 % ---- get data from TDT ----    
 dt=1;
-Event='Spks';
+% Event='Spks';
+Event='Spk2';
+
 Channel=1;
 tlim=[100 600];
 [trln_ts,trln_values]=TDTgetEventData(TTX,'TrlN',0,0,'ALL');

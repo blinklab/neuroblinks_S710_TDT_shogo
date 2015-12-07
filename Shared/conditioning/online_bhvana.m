@@ -12,6 +12,7 @@ trace=(trace-metadata.cam.calib_offset)/metadata.cam.calib_scale;
 trials.eye(metadata.eye.trialnum2).time=time*1e3;
 trials.eye(metadata.eye.trialnum2).trace=trace;
 trials.eye(metadata.eye.trialnum2).stimtype=lower(metadata.stim.type);
+trials.eye(metadata.eye.trialnum2).isi=NaN;
 
 switch lower(metadata.stim.type)
     case 'none'
@@ -26,13 +27,14 @@ switch lower(metadata.stim.type)
         trials.eye(metadata.eye.trialnum2).stimtime.st{1}=metadata.stim.e.delay;
         trials.eye(metadata.eye.trialnum2).stimtime.en{1}=metadata.stim.e.traindur;
         trials.eye(metadata.eye.trialnum2).stimtime.cchan(1)=1;
-    case 'conditioning'
+    case {'conditioning','electrocondition'}
         trials.eye(metadata.eye.trialnum2).stimtime.st{1}=0; % for CS
         trials.eye(metadata.eye.trialnum2).stimtime.en{1}=metadata.stim.c.csdur;
         trials.eye(metadata.eye.trialnum2).stimtime.cchan(1)=3;
         trials.eye(metadata.eye.trialnum2).stimtime.st{2}=metadata.stim.c.isi;
         trials.eye(metadata.eye.trialnum2).stimtime.en{2}=metadata.stim.c.usdur; % for US
         trials.eye(metadata.eye.trialnum2).stimtime.cchan(2)=2;
+        trials.eye(metadata.eye.trialnum2).isi=metadata.stim.c.isi;
     case 'optical'      
         trials.eye(metadata.eye.trialnum2).stimtime.st{1}=metadata.stim.l.delay;
         trials.eye(metadata.eye.trialnum2).stimtime.en{1}=metadata.stim.l.traindur;

@@ -53,7 +53,7 @@ metadata.cam.init_GainRaw = 12;
 
 % TDT tank -- not necessary for Arduino version
 % The tank should be registered using TankMon (really only matters for TDT version)
-tank='conditioning'; 
+tank='conditioning1'; 
 
 % GUI
 % -- specify the location of bottomleft corner of MainWindow & AnalysisWindow  --

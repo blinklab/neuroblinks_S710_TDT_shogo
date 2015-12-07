@@ -39,13 +39,13 @@ end
 metadata.eye.trialnum2=metadata.eye.trialnum2+1;
 setappdata(0,'metadata',metadata);
 
-% TDT=getappdata(0,'tdt');
-% if TDT.GetTargetVal('ustim.RecEnable')
-% 	% --- online spike saving, executed by timer ---
-% 	etime1=round(1000*etime(clock,t0))/1000;
-% 	tm1 = timer('TimerFcn',@online_savespk_to_memory, 'startdelay', max(0, 4-etime1));
-% 	start(tm1);
-% end
+TDT=getappdata(0,'tdt');
+if TDT.GetTargetVal('ustim.RecEnable')
+	% --- online spike saving, executed by timer ---
+	etime1=round(1000*etime(clock,t0))/1000;
+	tm1 = timer('TimerFcn',@online_savespk_to_memory, 'startdelay', max(0, 5.5-etime1));
+	start(tm1);
+end
 
 
 
