@@ -22,7 +22,7 @@ function varargout = OneTrialAnaWindow(varargin)
 
 % Edit the above text to modify the response to help OneTrialAnaWindow
 
-% Last Modified by GUIDE v2.5 25-Mar-2013 15:19:57
+% Last Modified by GUIDE v2.5 07-Dec-2015 19:44:09
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -198,9 +198,8 @@ function edit_ymax_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of edit_ymax as text
 %        str2double(get(hObject,'String')) returns contents of edit_ymax as a double
-ylim3=[-1 1]*str2num(get(handles.edit_ymax,'String'));
 t_num=str2num(get(handles.edit_trialnum,'String'));
-drawOneSpk(handles,t_num,ylim3)
+drawOneSpk(handles,t_num)
 
 
 % --- Executes during object creation, after setting all properties.
@@ -215,6 +214,27 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
+function edit_xmax_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_xmax (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit_xmax as text
+%        str2double(get(hObject,'String')) returns contents of edit_xmax as a double
+t_num=str2num(get(handles.edit_trialnum,'String'));
+drawOneSpk(handles,t_num)
+
+% --- Executes during object creation, after setting all properties.
+function edit_xmax_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit_xmax (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
 
 % --- Executes on button press in pushbutton_LFP.
 function pushbutton_LFP_Callback(hObject, eventdata, handles)
@@ -231,6 +251,39 @@ set(ghandles.onetrialanagui,'units','pixels')
 set(ghandles.onetrialanagui,'position',[ghandles.pos_lfpwin ghandles.size_lfpwin])
 
 
+% --- Executes on selection change in listbox_snip.
+function listbox_snip_Callback(hObject, eventdata, handles)
+% hObject    handle to listbox_snip (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns listbox_snip contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from listbox_snip
+
+
+% --- Executes during object creation, after setting all properties.
+function listbox_snip_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to listbox_snip (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: listbox controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in pushbutton_get_data.
+function pushbutton_get_data_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_get_data (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+tnum=str2num(get(handles.edit_trialnum,'String'));
+online_savespk_for_a_trial(tnum)
+drawOneEyelid(handles,tnum)
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% user difined functions %%%%%%%%%%
@@ -241,10 +294,10 @@ function drawOneEyelid(handles,t_num)
 trials=getappdata(0,'trials');
 if ~isfield(trials,'eye'), return,  end
 tnum_max=length(trials.eye);
-str_tl={[sprintf('Trial Viewer (1-%d)',tnum_max)] [trials.eye(t_num).stimtype]};
+str_tl={[sprintf('(1-%d)',tnum_max)] [trials.eye(t_num).stimtype]};
 
 % ------- for eye -----
-subplot('position',[0.05 0.17 0.90 0.50], 'Parent', handles.uipanel_behavior)
+subplot('position',[0.06 0.19 0.90 0.46], 'Parent', handles.uipanel_behavior)
 cla
 plot([-1 1]*1000, [0 0],'k:'),  hold on,   plot([-1 1]*1000, [1 1],'k:'), 
 
@@ -253,7 +306,7 @@ set(gca,'ylim',[-0.15 1.20], 'ytick',[0:0.5:1], 'box', 'off','tickdir','out')
 xlim1=[trials.eye(t_num).time(1) trials.eye(t_num).time(end)];
 plotOneEyelid(t_num);
 
-text(xlim1*[0.33;0.67], -0.46, str_tl)
+text(xlim1*[0.38;0.62], -0.54, str_tl, 'fontsize',10)
 set(gca,'xlim',xlim1,'xtick',[-400:200:1000])
 set(gca,'color',[240 240 240]/255);
 
@@ -274,12 +327,11 @@ set(gca,'color',[240 240 240]/255);
 % % ylim1(find(abs(ylim1)<ylim_low))=NaN;
 % ylim2=abs(nanmedian(ylim1));  
 % ylim3=ylim_low*[1 1];  ylim3(ylim2>ylim_low)=ylim2(ylim2>ylim_low); ylim3(1)=-ylim3(1);
-ylim3=[-1 1]*str2num(get(handles.edit_ymax,'String'));
 
-drawOneSpk(handles,t_num,ylim3)
+drawOneSpk(handles,t_num)
 
 
-function drawOneSpk(handles,t_num,ylim3)
+function drawOneSpk(handles,t_num)
 
 trials=getappdata(0,'trials');
 if isfield(trials,'spk'),
@@ -287,10 +339,13 @@ if isfield(trials,'spk'),
 else, tnum_max=0; 
 end
 
-subplot('position',[0.10 0.72 0.86 0.25], 'Parent', handles.uipanel_behavior)
+subplot('position',[0.10 0.74 0.86 0.25], 'Parent', handles.uipanel_behavior)
 cla
 if t_num>tnum_max, return, end
 
+ylim3=[-1 1]*str2num(get(handles.edit_ymax,'String'));
+xlim2(2)=str2num(get(handles.edit_xmax,'String'));
+xlim2(1)=-xlim2(2)/4;
 
 plot([0 0], [-1 1]*2000, 'k:'),  hold on,   
 set(gca,'color',[240 240 240]/255);
@@ -299,6 +354,6 @@ plot([1 1]*trials.eye(t_num).stimtime.st{end}, [-1 1]*2000, 'k:'),
 if isfield(trials,'spk'),
     plot(trials.spk(t_num).time,trials.spk(t_num).y,'k'), 
 end
-xlim2=[-100 400];
+
 set(gca,'xlim',xlim2,'xtick',[0:100:1000])
 set(gca,'ylim',ylim3*1.0, 'ytick',ylim3,'yticklabel',{num2str(ylim3(1)) []}, 'box', 'off','tickdir','out')

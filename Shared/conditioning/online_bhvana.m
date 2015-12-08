@@ -16,7 +16,7 @@ trials.eye(metadata.eye.trialnum2).isi=NaN;
 
 switch lower(metadata.stim.type)
     case 'none'
-        trials.eye(metadata.eye.trialnum2).stimtime.st{1}=Inf;
+        trials.eye(metadata.eye.trialnum2).stimtime.st{1}=0;
         trials.eye(metadata.eye.trialnum2).stimtime.en{1}=0;
         trials.eye(metadata.eye.trialnum2).stimtime.cchan(1)=0;
     case 'puff'

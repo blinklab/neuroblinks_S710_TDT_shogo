@@ -2,7 +2,7 @@ function TriggerStim(hObject, handles)
 % this components come from pushbutton_stim_Callback of MainWindow.m
 
 % Get stim params and pass to TDT
-% refreshParams(hObject);
+
 sendParamsToTDT(hObject)
 
 TDT=getappdata(0,'tdt');
@@ -34,7 +34,7 @@ if get(handles.checkbox_record,'Value') == 1
     if get(handles.toggle_continuous,'Value') == 1,  % when continuous mode
         if TDT.GetSysMode < 3
             disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'),
-            disp('%%%% TDT is not recording mode. Frame times will not saved. %%%%'),
+            disp('%%%% TDT is not recording mode. Frame timings will not be saved. %%%%'),
             disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
         end
     else
