@@ -493,21 +493,73 @@ str=get(hObject,'String');
 metadata.stim.type=str{val};
 setappdata(0,'metadata',metadata);
 
+bckgrd_color1=[1 1 1]*240/255;
+set(handles.uipanel_stim,'BackgroundColor',bckgrd_color1); 
+        set(handles.uipanel_stim,'BackgroundColor',bckgrd_color1); % light blue
+        set(handles.text9,'BackgroundColor',bckgrd_color1); % light blue
+        set(handles.text10,'BackgroundColor',bckgrd_color1); % light blue
+        set(handles.text1,'BackgroundColor',bckgrd_color1); % light blue
+        set(handles.text2,'BackgroundColor',bckgrd_color1); % light blue
+        set(handles.text3,'BackgroundColor',bckgrd_color1); % light blue
+        set(handles.text4,'BackgroundColor',bckgrd_color1); % light blue
+        set(handles.text12,'BackgroundColor',bckgrd_color1); % light blue
+        set(handles.text20,'BackgroundColor',bckgrd_color1); % light blue
+        set(handles.text13,'BackgroundColor',bckgrd_color1); % light blue
+        set(handles.uipanel_el,'BackgroundColor',bckgrd_color1); % light blue
+set(handles.uipanel_puff,'BackgroundColor',bckgrd_color1);
+        set(handles.uipanel_puff,'BackgroundColor',bckgrd_color1); % light blue
+        set(handles.text17,'BackgroundColor',bckgrd_color1); % light blue
+        set(handles.text29,'BackgroundColor',bckgrd_color1); % light blue
+        set(handles.text21,'BackgroundColor',bckgrd_color1); % light blue
+        set(handles.radiobutton_ipsi,'BackgroundColor',bckgrd_color1); % light blue
+        set(handles.radiobutton_contra,'BackgroundColor',bckgrd_color1); % light blue
+        set(handles.checkbox_puffside,'BackgroundColor',bckgrd_color1); % light blue
+set(handles.uipanel_conditioning,'BackgroundColor',bckgrd_color1);
+        set(handles.checkbox_random,'BackgroundColor',bckgrd_color1); % light blue
+        set(handles.text_disp_cond,'BackgroundColor',bckgrd_color1); % light blue
+
 % ------ highlight for uipanel -----
-set(handles.uipanel_stim,'BackgroundColor',[240 240 240]/255); 
-set(handles.uipanel_puff,'BackgroundColor',[240 240 240]/255);
-set(handles.uipanel_conditioning,'BackgroundColor',[240 240 240]/255);
+bckgrd_color2=[248 220 220]/255;
 switch lower(metadata.stim.type)
     case 'puff'
-        set(handles.uipanel_puff,'BackgroundColor',[245 249 253]/255); % light blue
+        set(handles.uipanel_puff,'BackgroundColor',bckgrd_color2); % light blue
+        set(handles.text17,'BackgroundColor',bckgrd_color2); % light blue
+        set(handles.text29,'BackgroundColor',bckgrd_color2); % light blue
+        set(handles.text21,'BackgroundColor',bckgrd_color2); % light blue
+        set(handles.radiobutton_ipsi,'BackgroundColor',bckgrd_color2); % light blue
+        set(handles.radiobutton_contra,'BackgroundColor',bckgrd_color2); % light blue
+        set(handles.checkbox_puffside,'BackgroundColor',bckgrd_color2); % light blue
     case 'conditioning'
-        set(handles.uipanel_conditioning,'BackgroundColor',[245 249 253]/255); % light blue
+        set(handles.uipanel_conditioning,'BackgroundColor',bckgrd_color2); % light blue
+        set(handles.checkbox_random,'BackgroundColor',bckgrd_color2); % light blue
+        set(handles.text_disp_cond,'BackgroundColor',bckgrd_color2); % light blue
     case {'electrical','optical','optoelectric'}
-        set(handles.uipanel_stim,'BackgroundColor',[245 249 253]/255); % light blue
+        set(handles.uipanel_stim,'BackgroundColor',bckgrd_color2); % light blue
+        set(handles.text9,'BackgroundColor',bckgrd_color2); % light blue
+        set(handles.text10,'BackgroundColor',bckgrd_color2); % light blue
+        set(handles.text1,'BackgroundColor',bckgrd_color2); % light blue
+        set(handles.text2,'BackgroundColor',bckgrd_color2); % light blue
+        set(handles.text3,'BackgroundColor',bckgrd_color2); % light blue
+        set(handles.text4,'BackgroundColor',bckgrd_color2); % light blue
+        set(handles.text12,'BackgroundColor',bckgrd_color2); % light blue
+        set(handles.text20,'BackgroundColor',bckgrd_color2); % light blue
+        set(handles.text13,'BackgroundColor',bckgrd_color2); % light blue
+        set(handles.uipanel_el,'BackgroundColor',bckgrd_color2); % light blue
     case  {'optocondition','electrocondition'}
-        set(handles.uipanel_stim,'BackgroundColor',[245 249 253]/255); % light blue
-%         set(handles.uipanel_puff,'BackgroundColor',[245 249 253]/255); % light blue
-        set(handles.uipanel_conditioning,'BackgroundColor',[225 237 248]/255); % light blue
+        set(handles.uipanel_stim,'BackgroundColor',bckgrd_color2); % light blue
+        set(handles.text9,'BackgroundColor',bckgrd_color2); % light blue
+        set(handles.text10,'BackgroundColor',bckgrd_color2); % light blue
+        set(handles.text1,'BackgroundColor',bckgrd_color2); % light blue
+        set(handles.text2,'BackgroundColor',bckgrd_color2); % light blue
+        set(handles.text3,'BackgroundColor',bckgrd_color2); % light blue
+        set(handles.text4,'BackgroundColor',bckgrd_color2); % light blue
+        set(handles.text12,'BackgroundColor',bckgrd_color2); % light blue
+        set(handles.text20,'BackgroundColor',bckgrd_color2); % light blue
+        set(handles.text13,'BackgroundColor',bckgrd_color2); % light blue
+        set(handles.uipanel_el,'BackgroundColor',bckgrd_color2); % light blue
+        set(handles.uipanel_conditioning,'BackgroundColor',bckgrd_color2); % light blue
+        set(handles.checkbox_random,'BackgroundColor',bckgrd_color2); % light blue
+        set(handles.text_disp_cond,'BackgroundColor',bckgrd_color2); % light blue
 end   
 resetStimTrials()
 % refreshParams(hObject);

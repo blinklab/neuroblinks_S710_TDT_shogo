@@ -46,6 +46,20 @@ metadata.stim.c.puffdur=str2double(get(handles.edit_puffdur,'String'));
     if length(metadata.stim.c.toneamp)<2, metadata.stim.c.toneamp(2)=0; end
 
     metadata.stim.c.ITI=str2double(get(handles.edit_ITI,'String'));
+
+%=== 'auto off' codes ====%
+% % Turns off the "continuous" button if we've reached the end of the table in case we want to limit the number of trials done
+trialtable=getappdata(0,'trialtable');  [m,n]=size(trialtable);
+if mod(metadata.eye.trialnum1,m) == 0 && metadata.eye.trialnum1 > 0
+    ghandles=getappdata(0,'ghandles');
+    handles=guidata(ghandles.maingui);
+    if get(handles.toggle_continuous,'Value') == 1
+        set(handles.toggle_continuous,'Value',0)
+        set(handles.toggle_continuous,'String','Continuous: OFF')
+    end
+    disp(sprintf('\nEnd of Trial Table reached: Automatically disabled continuous mode\n'))
+end
+%=========================%
 % end
 
 puffsidestring={'ipsi' 'contra'};

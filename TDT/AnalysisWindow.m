@@ -593,6 +593,8 @@ TTX=getappdata(0,'ttx');
 ghandles=getappdata(0,'ghandles');
 trials=getappdata(0,'trials');
 
+if trials.raster.skip, return, end
+
 % % --- checking updated data ----
 % if ghandles.flttrgnum==length(trials.ts_flttrg),   return,  end
 % ghandles.flttrgnum=length(trials.ts_flttrg);
@@ -864,6 +866,12 @@ for i=1:(rep+1)
     pause(0.01)
 end
 trials.raster.times=spiketimes;  trials.raster.shapes=spikeshapes;  trials.raster.codes=sortcodes;
+
+skip=0;
+if isempty(spiketimes), skip=1;
+elseif sum(~isnan(spiketimes))==0, skip=1;
+end
+
 % --- sort code ---
 sortcodes1=get(handles.listbox_snips_spk,'String');
 sortcodevalues=get(handles.listbox_snips_spk,'Value');
@@ -872,9 +880,10 @@ sortedspiketimes=spiketimes(ismember(sortcodes,selectedsortcodes));
 
 % --- raster and hist ---
 binsz=0.005;  pretm=0.2;  posttm=0.6;
-[histdata,rasterdata,countdata]=fpsth(sortedspiketimes, ts_flttrg, binsz, pretm, posttm, 'rect', 0.01);
-trials.raster.histdata=histdata;  trials.raster.rasterdata=rasterdata;  
 trials.raster.bin_pre_post=[binsz pretm posttm];
+if ~skip, [histdata,rasterdata,countdata]=fpsth(sortedspiketimes, ts_flttrg, binsz, pretm, posttm, 'rect', 0.01); 
+else,   histdata=[NaN;NaN]; rasterdata=NaN; end
+trials.raster.histdata=histdata;  trials.raster.rasterdata=rasterdata;   
 
 % --- corr ---
 anawin=[50 220]/1000;
@@ -883,26 +892,29 @@ twind1=(rasterbins>anawin(1) & rasterbins<anawin(2));
 trials.corr.spk_filt=nansum(rasterdata(1:end-1,twind1),2)/diff(anawin);
 [ind1, dist1] = nearestpoint(trials.ts_flttrg, trials.TrlN.times);
 trials.corr.CR_amp=trials.eye_CR_amp(ind1);
-ind2=~isnan(trials.corr.CR_amp+trials.corr.spk_filt);
-[r,p]=corrcoef(trials.corr.CR_amp(ind2), trials.corr.spk_filt(ind2));
-trials.corr.rp=[r(1,2) p(1,2)];
-
+if ~skip,
+    ind2=~isnan(trials.corr.CR_amp+trials.corr.spk_filt);
+    [r,p]=corrcoef(trials.corr.CR_amp(ind2), trials.corr.spk_filt(ind2));
+    trials.corr.rp=[r(1,2) p(1,2)];
+end
 % --- grouping -----
 gr_num=3;
 trials.gr=grouping(gr_num, [], 'descend', trials.corr.CR_amp);
 trials.gr.eyetime=eye_mat.time;
 trials.gr.eye=NaN*ones(length(eye_mat.time),gr_num);
 trials.gr.histdata=NaN*ones(size(histdata,2),gr_num);
-trials.gr.h_bins=NaN*ones(size(histdata,2),1);
+trials.gr.h_bins=NaN*ones(size(histdata,2),1); 
 for j=1:gr_num
     if length(trials.gr.gr_tr{j})<=2, continue, end
+    trials.gr.eye(:,j)=nanmean(eye_mat.eyepos(:,ind1(trials.gr.gr_tr{j})),2);
+    if skip, continue, end
     [histdata,rasterdata,countdata]=fpsth(sortedspiketimes, ts_flttrg(sort(trials.gr.gr_tr{j})), binsz, pretm, posttm, 'rect', 0.03);
     trials.gr.histdata(:,j)=histdata(1,:)/binsz;
     trials.gr.h_bins=histdata(2,:)'*1000;
-    trials.gr.eye(:,j)=nanmean(eye_mat.eyepos(:,ind1(trials.gr.gr_tr{j})),2);
 end
 
 % -- output --
+trials.raster.skip=skip;
 setappdata(0,'trials',trials)
 
 
@@ -912,12 +924,13 @@ function plotScatter(handles)
 trials=getappdata(0,'trials');
 subplot('position',[0.40 0.16 0.20 0.75], 'Parent', handles.uipanel_behavior)
 cla
+set(gca,'color',[240 240 240]/255)
 
+if trials.raster.skip, return, end
 plot(trials.corr.CR_amp, trials.corr.spk_filt,'k.');
 title(sprintf('R = %4.3f',trials.corr.rp(1)))
 
 set(gca, 'xtick',[0:0.5:1], 'box', 'off','tickdir','out')
-set(gca,'color',[240 240 240]/255)
 xlabel('CR (blink) amp'),
 ylabel('SS (spk/s)')
 

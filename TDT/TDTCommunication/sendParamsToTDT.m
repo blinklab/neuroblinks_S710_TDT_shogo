@@ -43,25 +43,30 @@ end
 % --- conditioning -----
 % Need conditional statement so we don't get an error if we're not doing conditioning so trial table hasn't been created
 % if strcmpi(metadata.stim.type,'conditioning')
-%     if get(handles.checkbox_RX6,'Value'),
-%         TDT.SetTargetVal('Stim.PreStimTime',metadata.cam.time(1)); 
-%         TDT.SetTargetVal('Stim.CsDur',metadata.stim.c.csdur);
-%         TDT.SetTargetVal('Stim.ISI',metadata.stim.c.isi);
-%         TDT.SetTargetVal('Stim.UsDur',metadata.stim.c.usdur);
-%         TDT.SetTargetVal('Stim.PuffMDelay',metadata.stim.c.puffdelay);
-%         TDT.SetTargetVal('Stim.PuffDurM',metadata.stim.c.puffdur);
-%         TDT.SetTargetVal('Stim.PuffSide',metadata.stim.p.side_value);
-%     end
     % --- behavioral stim by RZ5 ---- 
     TDT.SetTargetVal('ustim.ITI',metadata.stim.c.ITI);
     TDT.SetTargetVal('ustim.CsDur',metadata.stim.c.csdur);
-    csnum=metadata.stim.c.csnum;  cstonefreq=0;  cstoneamp=0;
-    if ismember(csnum,[5 6]),  
+    csnum=metadata.stim.c.csnum;  cstonefreq=0;  cstoneamp=0;  csnum1=3; csnum2=3;
+    if ismember(csnum,[5 6]),  % for auditory CS
         cstonefreq=min(metadata.stim.c.tonefreq(csnum-4), 40000);  
         cstoneamp=metadata.stim.c.toneamp(csnum-4);
-        csnum=0; 
+        csnum=0; csnum1=0; csnum2=3; 
+    elseif ismember(csnum,[1 2 3]),  % for DIO CS (LED/Wisker)
+        csnum1=0; csnum2=csnum-1;
+    end
+    if strcmpi(metadata.stim.type,'conditioning') & ismember(csnum,[7 9]),  % for electrical CS
+        TDT.SetTargetVal('ustim.ETrainDur',metadata.stim.c.csdur);
+        TDT.SetTargetVal('ustim.EStimDelay',0);
+        csnum1=3; csnum2=3;
+    end
+    if strcmpi(metadata.stim.type,'conditioning') & ismember(csnum,[8 9]),  % for Laser CS
+        TDT.SetTargetVal('ustim.LTrainDur',metadata.stim.c.csdur);
+        TDT.SetTargetVal('ustim.LStimDelay',0);
+        csnum1=3; csnum2=3;
     end
     TDT.SetTargetVal('ustim.CSNum',csnum);
+    TDT.SetTargetVal('ustim.CSNum1',csnum1); % 0 tone, 1 DIO output (LED/wisker), 3 el/opt
+    TDT.SetTargetVal('ustim.CSNum2',csnum2); % for DIO, 0 DIO1, 1 DIO2, 2 DIO3 
     TDT.SetTargetVal('ustim.CSToneFreq',cstonefreq);
     TDT.SetTargetVal('ustim.CSToneAmp',cstoneamp);
     TDT.SetTargetVal('sound.CSToneFreq',cstonefreq);
@@ -93,19 +98,27 @@ switch lower(metadata.stim.type)
         TDT.SetTargetVal('ustim.TrialType',0);
     case {'puff'}
         TDT.SetTargetVal('ustim.TrialType',1);
-    case {'none','electrical','optical','optoelectric'}
-        TDT.SetTargetVal('ustim.TrialType',3);
+    case {'none','electrical','optical','optoelectric'} 
+        TDT.SetTargetVal('ustim.TrialType',3);   % no output 
 end
 
-switch lower(metadata.stim.type)
+switch lower(metadata.stim.type) % controling el or opt devices
     case {'electrical'}
         TDT.SetTargetVal('ustim.StimDevice',0);
     case {'optical','optocondition'}
         TDT.SetTargetVal('ustim.StimDevice',1);
     case {'optoelectric','electrocondition'}
-        TDT.SetTargetVal('ustim.StimDevice',2);
+        TDT.SetTargetVal('ustim.StimDevice',2);   % both of el & opt
     case {'none','puff','conditioning'}
-        TDT.SetTargetVal('ustim.StimDevice',3);
+        if ismember(csnum,[7])
+            TDT.SetTargetVal('ustim.StimDevice',0);
+        elseif ismember(csnum,[8])
+            TDT.SetTargetVal('ustim.StimDevice',1);
+        elseif ismember(csnum,[9])
+            TDT.SetTargetVal('ustim.StimDevice',2);   % both of el & opt
+        else
+            TDT.SetTargetVal('ustim.StimDevice',3);   % no output from el/opt devices
+        end
 end
 
 if get(handles.togglebutton_ampblank,'Value')   % If amplifier blank is set

@@ -153,7 +153,8 @@ end
 
 % NOTE: had to temporarily comment out this part because it causes problems with the "auto off" code that turns off
 %       continuous mode when we reach the end of the trial table - SHANE
-%
+%       shogo think this issue was solved.
+
 % ---- display current trial data in conditioning ----
 if strcmpi(metadata.stim.type,'conditioning')
     
@@ -163,13 +164,27 @@ if strcmpi(metadata.stim.type,'conditioning')
     isi=trialvars(3);
     usdur=trialvars(4);
     cstone=str2num(get(handles.edit_tone,'String'));
+    e_amp=str2double(get(handles.edit_estimamp,'String'));
     if length(cstone)<2, cstone(2)=0; end
     
-    str2=[];
+    % --- reset background color ---
+    bckgrd_color1=[1 1 1]*240/255;
+    set(handles.uipanel_el,'BackgroundColor',bckgrd_color1); % light blue
+    set(handles.text1,'BackgroundColor',bckgrd_color1); % light blue
+    set(handles.text2,'BackgroundColor',bckgrd_color1); % light blue
+    set(handles.text4,'BackgroundColor',bckgrd_color1); % light blue
+    
+    str2=[];   bckgrd_color2=[248 220 220]/255;
     if ismember(csnum,[5 6]), 
         str2=[' (' num2str(cstone(csnum-4)) ' Hz)'];
+    elseif ismember(csnum,[7 9]), 
+        str2=[' (' num2str(e_amp) ' uA)'];
+        set(handles.uipanel_el,'BackgroundColor',bckgrd_color2); % light blue
+        set(handles.text1,'BackgroundColor',bckgrd_color2); % light blue
+        set(handles.text2,'BackgroundColor',bckgrd_color2); % light blue
+        set(handles.text4,'BackgroundColor',bckgrd_color2); % light blue
     end
-        
+    
     str1=sprintf('Next:  No %d,  CS ch %d%s,  ISI %d,  US %d',metadata.eye.trialnum1+1, csnum, str2, isi, usdur);
     set(handles.text_disp_cond,'String',str1)
 end
@@ -177,8 +192,4 @@ end
 
 
 
-% function incrementStimTrial()
-% trials=getappdata(0,'trials');
-% trials.stimnum=trials.stimnum+1;
-% setappdata(0,'trials',trials);
 
