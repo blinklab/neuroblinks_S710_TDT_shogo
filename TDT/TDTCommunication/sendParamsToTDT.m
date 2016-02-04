@@ -52,7 +52,7 @@ end
         cstoneamp=metadata.stim.c.toneamp(csnum-4);
         csnum=0; csnum1=0; csnum2=3; 
     elseif ismember(csnum,[1 2 3]),  % for DIO CS (LED/Wisker)
-        csnum1=0; csnum2=csnum-1;
+        csnum1=1; csnum2=csnum-1;
     end
     if strcmpi(metadata.stim.type,'conditioning') & ismember(csnum,[7 9]),  % for electrical CS
         TDT.SetTargetVal('ustim.ETrainDur',metadata.stim.c.csdur);
@@ -103,13 +103,15 @@ switch lower(metadata.stim.type)
 end
 
 switch lower(metadata.stim.type) % controling el or opt devices
+    case {'none','puff'}
+        TDT.SetTargetVal('ustim.StimDevice',3);   % no output from el/opt devices
     case {'electrical'}
         TDT.SetTargetVal('ustim.StimDevice',0);
     case {'optical','optocondition'}
         TDT.SetTargetVal('ustim.StimDevice',1);
     case {'optoelectric','electrocondition'}
         TDT.SetTargetVal('ustim.StimDevice',2);   % both of el & opt
-    case {'none','puff','conditioning'}
+    case {'conditioning'}
         if ismember(csnum,[7])
             TDT.SetTargetVal('ustim.StimDevice',0);
         elseif ismember(csnum,[8])

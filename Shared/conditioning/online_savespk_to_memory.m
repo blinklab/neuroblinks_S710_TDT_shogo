@@ -34,7 +34,7 @@ if ~ok
     error('Could not select current block.')
 end
     
-for tnum=length_trials_spk+1:length(trials.eye);
+for tnum=max(length(trials.eye)-3,length_trials_spk+1):length(trials.eye);
     online_savespk_for_a_trial(tnum)
 end
 

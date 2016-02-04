@@ -1,6 +1,6 @@
 function Launch(rig,cam)
 % Note that "rig" argument is not currently used for TDT option
-
+metadata=getappdata(0,'metadata');
 neuroblinks_config;	% Per user settings
 configure;
 
@@ -26,7 +26,7 @@ if TDT.GetSysMode < 1
     ok=TDT.SetTankName(tank);
     if ~ok
         disp('Cannot set tank name. Is OpenWorkbench running?');  i=0;
-        while i<10 & ~ok
+        while i<25 & ~ok
             disp('The system try to find TDT, again....')
             pause(1)
             

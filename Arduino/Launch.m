@@ -1,4 +1,7 @@
-function LaunchArduino(ch)
+function Launch(rig,ch)
+metadata=getappdata(0,'metadata');
+
+neuroblinks_config;	% Per user settings
 configA;
 
 setappdata(0,'paramtable',paramtable);
@@ -9,7 +12,7 @@ pause(0.3);
 InitCamA(ch, metadata.cam.recdurA); % src and vidobj are now saved as root app data so no global vars
 
 %% -- start serial communication to arduino ---
-arduino=serial(comport{ch},'BaudRate',9600);
+arduino=serial(comport{rig},'BaudRate',9600);
 fopen(arduino);
 setappdata(0,'arduino',arduino);
 

@@ -2,6 +2,7 @@ function plotOneEyelid(t_num)
 
 trials=getappdata(0,'trials');
 if ~isfield(trials,'eye'),    return,  end
+if isempty(trials.eye(t_num).time),    return,  end
 % --- identifying 3 periods ----
 ti_pre=find(trials.eye(t_num).time<=trials.eye(t_num).stimtime.st{1});
 ti_post=find(trials.eye(t_num).time>trials.eye(t_num).stimtime.st{end});

@@ -98,9 +98,9 @@ handles.output = hObject;
 guidata(hObject, handles);
 
 
-% Open parameter dialog
-h=ParamsWindow;
-waitfor(h);
+% % Open parameter dialog
+% h=ParamsWindow;
+% waitfor(h);
 
 pushbutton_StartStopPreview_Callback(handles.pushbutton_StartStopPreview, [], handles)
 

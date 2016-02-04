@@ -22,7 +22,7 @@ function varargout = MainWindowA(varargin)
 
 % Edit the above text to modify the response to help MainWindowA
 
-% Last Modified by GUIDE v2.5 22-Jun-2013 12:52:15
+% Last Modified by GUIDE v2.5 01-Jan-2016 18:25:48
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -84,8 +84,8 @@ setappdata(0,'metadata',metadata);
 setappdata(0,'trials',trials);
 
 % Open parameter dialog
-h=ParamsWindow;
-waitfor(h);
+% h=ParamsWindow;
+% waitfor(h);
 
 pushbutton_StartStopPreview_Callback(handles.pushbutton_StartStopPreview, [], handles)
 
@@ -378,8 +378,8 @@ elseif  strcmpi(metadata.stim.type, 'conditioning')
     datatoarduino(5)=metadata.stim.c.csdur;
     datatoarduino(6)=metadata.stim.c.usdur;
     datatoarduino(7)=metadata.stim.c.isi;
-    if ismember(datatoarduino(4),[5 6]),
-        datatoarduino(8)=metadata.stim.c.cstone(datatoarduino(3)-4)*1000;
+    if ismember(metadata.stim.c.csnum,[5 6]),
+        datatoarduino(8)=metadata.stim.c.cstone(metadata.stim.c.csnum-4)/1000; % kHz
     end
 end
 
@@ -402,12 +402,13 @@ metadata=getappdata(0,'metadata');
 vidobj=getappdata(0,'vidobj');
 vidobj.TriggerRepeat = 0;
 
-if get(handles.checkbox_record,'Value') == 1  
-    vidobj.StopFcn=@savetrial;
-    incrementStimTrial()
-else
-    vidobj.StopFcn=@nosavetrial;  
-end
+% if get(handles.checkbox_record,'Value') == 1  
+%     vidobj.StopFcn=@savetrial;
+%     incrementStimTrial()
+% else
+%     vidobj.StopFcn=@nosavetrial;  
+% end
+vidobj.StopFcn=@endOfTrial;
 flushdata(vidobj); % Remove any data from buffer before triggering
 start(vidobj)
 metadata.ts(2)=etime(clock,datevec(metadata.ts(1)));
@@ -452,11 +453,22 @@ t1=clock-10;
 t0=clock;
 
 eyedata=NaN*ones(500,2);  
-plt_range=-2000;
+plt_range=-2100;
 
 % set(0,'currentfigure',ghandles.maingui)
 % set(ghandles.maingui,'CurrentAxes',handles.axes_eye)
 % set(gca,'color',[240 240 240]/255,'YAxisLocation','right');
+
+if get(handles.togglebutton_stream,'Value')
+    set(0,'currentfigure',ghandles.maingui)
+    set(ghandles.maingui,'CurrentAxes',handles.axes_eye)
+    cla
+    pl1=plot([plt_range 0],[1 1]*0,'k-'); hold on
+    set(gca,'color',[240 240 240]/255,'YAxisLocation','right');
+    set(gca,'xlim',[plt_range 0],'ylim',[-0.1 1.1])
+    set(gca,'xtick',[-3000:500:0],'box','off')
+    set(gca,'ytick',[0:0.5:1],'yticklabel',{'0' '' '1'})
+end
 
 try
     while get(handles.togglebutton_stream,'Value') == 1
@@ -473,10 +485,11 @@ try
         eyedata(end,1)=etime0;
         eyedata(end,2)=(eyelidpos-metadata.cam.calib_offset)/metadata.cam.calib_scale; % eyelid pos
         
-        set(0,'currentfigure',ghandles.maingui)
-        set(ghandles.maingui,'CurrentAxes',handles.axes_eye)
-        plot(eyedata(:,1)-etime0,eyedata(:,2),'k')
-        set(gca,'xlim',[plt_range 0],'ylim',[-0.1 1.1])
+        set(pl1,'XData',eyedata(:,1)-etime0,'YData',eyedata(:,2))
+%         set(0,'currentfigure',ghandles.maingui)
+%         set(ghandles.maingui,'CurrentAxes',handles.axes_eye)
+%         plot(eyedata(:,1)-etime0,eyedata(:,2),'k')
+%         set(gca,'xlim',[plt_range 0],'ylim',[-0.1 1.1])
         
         % --- Trigger ----
         if get(handles.toggle_continuous,'Value') == 1
@@ -500,13 +513,24 @@ try
         end
     end
 catch
-    disp('Aborted eye streaming.')
-    set(handles.togglebutton_stream,'Value',0);
-    return
+    try % If it's a dropped frame, see if we can recover
+        handles.pwin=image(zeros(480,640),'Parent',handles.cameraAx);
+        pause(1) 
+        closepreview(vidobj);
+        pause(1) 
+        preview(vidobj,handles.pwin);
+        stream(handles)
+        disp('Caught camera error')
+    catch
+        disp('Aborted eye streaming.')
+        set(handles.togglebutton_stream,'Value',0);
+        return
+    end
 end
 
 function eyeok=checkeye(handles,eyedata)
 eyethrok = (eyedata(end,2)<str2double(get(handles.edit_eyethr,'String')));
+eyedata(:,1)=eyedata(:,1)-eyedata(end,1);  
 recenteye=eyedata(eyedata(:,1)>-1000*str2double(get(handles.edit_stabletime,'String')),2);
 eyestableok = ((max(recenteye)-min(recenteye))<str2double(get(handles.edit_stableeye,'String')));
 eyeok = eyethrok && eyestableok;
@@ -748,4 +772,21 @@ function edit_eyethr_CreateFcn(hObject, eventdata, handles)
 %       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in pushbutton_loadparams.
+function pushbutton_loadparams_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_loadparams (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+paramtable = getappdata(0,'paramtable');
+
+[paramfile,paramfilepath,filteridx] = uigetfile('*.csv');
+
+if paramfile & filteridx == 1 % The filterindex thing is a hack to make sure it's a csv file
+    paramtable.data=csvread(fullfile(paramfilepath,paramfile));
+    set(handles.uitable_params,'Data',paramtable.data);
+    setappdata(0,'paramtable',paramtable);
 end

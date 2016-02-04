@@ -111,7 +111,7 @@ set(handles.pushbutton_TDTConnect,'String',block)
 eventlist1={'CDur';'PufM';'PSde'};
 eventlist2=TDTgetEventChans(TTX); 
 not_important={'FrmN';'Tsmp';'TrlC';'CsAm';'EDp1';'EDp2';'EDp3';'EDp4';...
-    'EUnt';'MUnt';'MDp1';'EAmp';'EFrq';'EWth';'EDth';'LAmp';'LFrq';'LWth';'LDth';'LRpT'};
+    'EUnt';'MUnt';'MDp1';'EStm';'EWth';'EDth';'LStm';'LFrq';'LWth';'LDth';'LRpT'};
 eventlist2(ismember(eventlist2,[not_important(:);eventlist1(:)]))=[];
 eventlist=[eventlist1;eventlist2(:)];
 set(handles.popupmenu_events,'String',eventlist(:));
@@ -860,6 +860,7 @@ spiketimes=[]; spikeshapes=[];  sortcodes=[];
 for i=1:(rep+1)
     sttime2=sttime+each_dur*(i-1);  endtime2=sttime+each_dur*i;
     [tm1,shape1,code1]=TDTgetSpikeData(TTX,ID_snip,sttime2,endtime2,'FILTERED');
+    if size(shape1,1)==1, continue, end
     spiketimes=[spiketimes tm1];
     spikeshapes=[spikeshapes shape1];
     sortcodes=[sortcodes code1];
@@ -894,8 +895,11 @@ trials.corr.spk_filt=nansum(rasterdata(1:end-1,twind1),2)/diff(anawin);
 trials.corr.CR_amp=trials.eye_CR_amp(ind1);
 if ~skip,
     ind2=~isnan(trials.corr.CR_amp+trials.corr.spk_filt);
-    [r,p]=corrcoef(trials.corr.CR_amp(ind2), trials.corr.spk_filt(ind2));
-    trials.corr.rp=[r(1,2) p(1,2)];
+    if sum(ind2)<2, trials.corr.rp=NaN*[1 1]; 
+    else
+        [r,p]=corrcoef(trials.corr.CR_amp(ind2), trials.corr.spk_filt(ind2),'rows','pairwise');
+        trials.corr.rp=[r(1,2) p(1,2)];
+    end
 end
 % --- grouping -----
 gr_num=3;

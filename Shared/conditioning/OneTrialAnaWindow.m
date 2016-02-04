@@ -303,6 +303,7 @@ plot([-1 1]*1000, [0 0],'k:'),  hold on,   plot([-1 1]*1000, [1 1],'k:'),
 
 set(gca,'ylim',[-0.15 1.20], 'ytick',[0:0.5:1], 'box', 'off','tickdir','out')
 
+if isempty(trials.eye(t_num).time), return, end
 xlim1=[trials.eye(t_num).time(1) trials.eye(t_num).time(end)];
 plotOneEyelid(t_num);
 

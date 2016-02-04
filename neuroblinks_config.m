@@ -34,22 +34,14 @@ ALLOWEDCAMS_2014a = {'02-2020C-06976'};
 %%%%%%%%%%%% This is temporal solution (this should be fixed in future) %%%%%%%%%%%%%%%%%%%
 % check mameras by imaqtool. If the 1st camera in imaqtool was consistent
 % with box 1, ALLOWEDCAMS = [1 2]; else, ALLOWEDCAMS = [2 1];
-ALLOWEDCAMS = [1];
+ALLOWEDCAMS = [1 2];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % If you use Arduino, this list will include the USB IDs for your Arduinos (see comments in MainWindow.m
 % for Arduino version for details)
 % e.g. ARDUINO_IDS = {'753303030353511051B2','85235353037351803132'};
-ARDUINO_IDS = {'0','0'};
+ARDUINO_IDS = {'753303030353514071B0','753303030353514071B0'};
 
-% NOTE: In the future this should be dynamically set based on pre and post time
-% For now this variable isn't actually used by TDT version. 
-metadata.cam.recdurA=1000;
-
-% --- camera settings ----
-% Value is in microseconds and should be slightly less than interframe interval, e.g. 1/200*1e6-100 for 200 FPS
-metadata.cam.init_ExposureTime = 1900;
-metadata.cam.init_GainRaw = 12;
 
 % TDT tank -- not necessary for Arduino version
 % The tank should be registered using TankMon (really only matters for TDT version)

@@ -37,6 +37,9 @@ try
 catch
     try % If it's a dropped frame, see if we can recover
         handles.pwin=image(zeros(480,640),'Parent',handles.cameraAx);
+        pause(1) 
+        closepreview(vidobj);
+        pause(1) 
         preview(vidobj,handles.pwin);
         guidata(hObject,handles)
         streamEyelid(hObject, handles)
