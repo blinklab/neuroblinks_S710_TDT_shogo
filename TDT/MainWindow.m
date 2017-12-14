@@ -57,6 +57,7 @@ src=getappdata(0,'src');
 % TDT=getappdata(0,'tdt');
 
 metadata.date=date;
+metadata.now=datestr(now);
 % two element vector containing datenum at beginning of session and offset of current trial (in seconds) from beginning
 metadata.ts=[datenum(clock) 0];     % convert ts(1) to string representation by datestr(ts(1))
 % metadata.mouse='Sxxx';
@@ -102,6 +103,8 @@ guidata(hObject, handles);
 % h=ParamsWindow;
 % waitfor(h);
 
+pushbutton_StartStopPreview_Callback(handles.pushbutton_StartStopPreview, [], handles)
+pause(0.2) 
 pushbutton_StartStopPreview_Callback(handles.pushbutton_StartStopPreview, [], handles)
 
 % Create timer to check if we are recording every 3 seconds

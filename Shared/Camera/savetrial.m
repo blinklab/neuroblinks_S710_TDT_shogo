@@ -28,7 +28,7 @@ else
     pause(0.3-metadata.stim.totaltime/1000) % wait for serial buffer of TDT
 end
 
-fprintf('Data from trial %03d successfully written to disk.\n',metadata.cam.trialnum)
+fprintf('Data from trial %03d successfully written to disk.\n', metadata.cam.trialnum)
 
 
 % --- trial counter updated and saved in memory ---

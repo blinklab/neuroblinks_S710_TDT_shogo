@@ -51,7 +51,7 @@ end
         cstonefreq=min(metadata.stim.c.tonefreq(csnum-4), 40000);  
         cstoneamp=metadata.stim.c.toneamp(csnum-4);
         csnum=0; csnum1=0; csnum2=3; 
-    elseif ismember(csnum,[1 2 3]),  % for DIO CS (LED/Wisker)
+    elseif ismember(csnum,[1 2 3 4]),  % for DIO CS (LED/Wisker)
         csnum1=1; csnum2=csnum-1;
     end
     if strcmpi(metadata.stim.type,'conditioning') & ismember(csnum,[7 9]),  % for electrical CS
@@ -61,6 +61,9 @@ end
     end
     if strcmpi(metadata.stim.type,'conditioning') & ismember(csnum,[8 9]),  % for Laser CS
         TDT.SetTargetVal('ustim.LTrainDur',metadata.stim.c.csdur);
+        if metadata.stim.l.freq<=2,
+            TDT.SetTargetVal('ustim.LPulseWidth',metadata.stim.c.csdur*1000);
+        end
         TDT.SetTargetVal('ustim.LStimDelay',0);
         csnum1=3; csnum2=3;
     end

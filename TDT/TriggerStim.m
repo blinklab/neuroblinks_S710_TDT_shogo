@@ -58,11 +58,11 @@ else
 end
 
 flushdata(vidobj); % Remove any data from buffer before triggering
-% if isprop(src,'FrameStartTriggerSource')
-%     src.FrameStartTriggerSource = 'Line1';  % Switch from free run to TTL mode
-% else
-%     src.TriggerSource = 'Line1';
-% end
+if isprop(src,'FrameStartTriggerSource')
+    src.FrameStartTriggerSource = 'Line1';  % Switch from free run to TTL mode
+else
+    src.TriggerSource = 'Line1';
+end
 start(vidobj)
 
 metadata.ts(2)=etime(clock,datevec(metadata.ts(1)));

@@ -8,6 +8,8 @@ trials=getappdata(0,'trials');
 
 val=get(handles.popupmenu_stimtype,'Value');
 str=get(handles.popupmenu_stimtype,'String');
+
+metadata.now=datestr(now);
 metadata.stim.type=str{val};
 
 stimmode=metadata.stim.type;
