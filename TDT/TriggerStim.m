@@ -51,19 +51,27 @@ if get(handles.checkbox_record,'Value') == 1
         end
     end
     vidobj.StopFcn=@endOfTrial;
-%     incrementStimTrial()
 else
     TDT.SetTargetVal('ustim.CamTrial',0);   % Send TDT trial number of zero 
     vidobj.StopFcn=@endOfTrial;  
 end
-
-flushdata(vidobj); % Remove any data from buffer before triggering
+disp('0')
 if isprop(src,'FrameStartTriggerSource')
     src.FrameStartTriggerSource = 'Line1';  % Switch from free run to TTL mode
+    src.FrameStartTriggerActivation = 'RisingEdge';
+    vidobj.ROIposition=metadata.cam.vidobj_ROIposition;
 else
-    src.TriggerSource = 'Line1';
+    disp('1')
+%     src.TriggerSource = 'FixedRate';
+    src.TriggerSource = 'Line1';  % ROI is modified by DSP subregion
+    src.TriggerActivation = 'RisingEdge';
+    vidobj.ROIposition=metadata.cam.vidobj_ROIposition; % ROI correction
 end
+disp('2')
+
+flushdata(vidobj); % Remove any data from buffer before triggering
 start(vidobj)
+
 
 metadata.ts(2)=etime(clock,datevec(metadata.ts(1)));
 TDT.SetTargetVal('ustim.MatTime',metadata.ts(2));

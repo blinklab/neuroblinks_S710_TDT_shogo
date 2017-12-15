@@ -31,11 +31,11 @@ triggerconfig(vidobj, 'hardware', 'DeviceSpecific', 'DeviceSpecific');
 % configuration. 
 if isprop(src,'FrameStartTriggerMode')
     src.FrameStartTriggerMode = 'On';
-    src.FrameStartTriggerActivation = 'LevelHigh';
+    src.FrameStartTriggerActivation = 'RisingEdge';
     src.FrameStartTriggerSource = 'Freerun';
 else
     src.TriggerMode = 'On';
-    src.TriggerActivation = 'LevelHigh';
+    src.TriggerActivation = 'RisingEdge';
     src.TriggerSource = 'Freerun';
 end
 

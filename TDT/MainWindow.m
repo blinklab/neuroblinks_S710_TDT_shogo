@@ -978,12 +978,17 @@ function togglebutton_tgframerate_Callback(hObject, eventdata, handles)
 vidobj=getappdata(0,'vidobj');
 src=getappdata(0,'src');
 metadata=getappdata(0,'metadata');
+memory_of_stream=0;
+
+if get(handles.togglebutton_stream,'Value') == 1
+    set(handles.togglebutton_stream,'Value',0),  memory_of_stream=1;
+end
 
 if get(hObject,'Value')
     % Turn on high frame rate mode
     sug_extime=1900;
     sug_gain=metadata.cam.init_GainRaw+round(20*log10(metadata.cam.init_ExposureTime/sug_extime));
-    dlgans=inputdlg({'Frame rate','Exposure Time','Gain (+20*log10)'},'Frame rate',1,{'500',num2str(sug_extime),num2str(sug_gain)});
+    dlgans=inputdlg({'Frame rate','Exposure Time','Gain (+20*log10)'},'Frame rate',1,{'508',num2str(sug_extime),num2str(sug_gain)});
     if isempty(dlgans)
         set(hObject,'Value',0);     return;
     elseif isempty(dlgans{1})|isempty(dlgans{2})|isempty(dlgans{3})
@@ -1007,6 +1012,7 @@ if get(hObject,'Value')
     vidroi_y=metadata.cam.vidobj_ROIposition(2)+[1:metadata.cam.vidobj_ROIposition(4)];
     metadata.cam.mask = metadata.cam.mask(vidroi_y, vidroi_x);
     metadata.cam.winpos(1:2)=metadata.cam.winpos(1:2)-metadata.cam.vidobj_ROIposition(1:2);
+    
 else
     % Turn off high frame rate mode
     vidobj.ROIposition=metadata.cam.fullsize;
@@ -1511,7 +1517,8 @@ function togglebutton_recordContinuous_Callback(hObject, eventdata, handles)
 
 if get(hObject,'value') == 1
     src.TriggerSelector='AcquisitionStart'; % Not sure if this is correct; may need to be 'FrameStart' as well
-    src.TriggerSource='FixedRate';
+%     src.TriggerSource='FixedRate';
+    src.TriggerSource='Line1';
 else
     src.TriggerSelector='FrameStart';
     src.TriggerSource='Freerun';

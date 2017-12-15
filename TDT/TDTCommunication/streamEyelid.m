@@ -1,5 +1,5 @@
 function streamEyelid(hObject, handles)
-% updaterate=0.016;   % 30 Hz
+% updaterate=0.033;   % 30 Hz
 updaterate=0.020;   % 50 Hz
 % updaterate=0.1;   % 10 Hz
 
@@ -37,7 +37,12 @@ try
     end
 catch
     try % If it's a dropped frame, see if we can recover
-        handles.pwin=image(zeros(480,640),'Parent',handles.cameraAx);
+%         handles.pwin=image(zeros(480,640),'Parent',handles.cameraAx);
+        metadata=getappdata(0,'metadata');
+        imx=metadata.cam.vidobj_ROIposition(1)+[1:metadata.cam.vidobj_ROIposition(3)];
+        imy=metadata.cam.vidobj_ROIposition(2)+[1:metadata.cam.vidobj_ROIposition(4)];
+        handles.pwin=image(imx,imy,zeros(metadata.cam.vidobj_ROIposition([4 3])), 'Parent',handles.cameraAx);
+    
         pause(0.5) 
         closepreview(vidobj);
         pause(0.2) 
