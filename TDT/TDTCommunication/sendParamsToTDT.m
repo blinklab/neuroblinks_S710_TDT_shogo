@@ -67,9 +67,33 @@ end
         TDT.SetTargetVal('ustim.LStimDelay',0);
         csnum1=3; csnum2=3;
     end
+    usnum=metadata.stim.c.usnum; usnum1=0;  usnum2=0; 
+    if ismember(usnum,[5 6]),  % for auditory CS
+        cstonefreq=min(metadata.stim.c.tonefreq(usnum-4), 40000);  
+        cstoneamp=metadata.stim.c.toneamp(usnum-4);
+        usnum=0; usnum1=0; usnum2=3; 
+    elseif ismember(usnum,[1 2 3 4]),  % for DIO CS (LED/Wisker)
+        usnum1=1; usnum2=usnum-1;
+    end
+    if strcmpi(metadata.stim.type,'conditioning') & ismember(usnum,[7 9]),  % for electrical CS
+        TDT.SetTargetVal('ustim.ETrainDur',metadata.stim.c.usdur);
+        TDT.SetTargetVal('ustim.EStimDelay',0);
+        usnum1=3; usnum2=3;
+    end
+    if strcmpi(metadata.stim.type,'conditioning') & ismember(usnum,[8 9]),  % for Laser CS
+        TDT.SetTargetVal('ustim.LTrainDur',metadata.stim.c.usdur);
+        if metadata.stim.l.freq<=2,
+            TDT.SetTargetVal('ustim.LPulseWidth',metadata.stim.c.usdur*1000);
+        end
+        TDT.SetTargetVal('ustim.LStimDelay',0);
+        usnum1=3; usnum2=3;
+    end
     TDT.SetTargetVal('ustim.CSNum',csnum);
     TDT.SetTargetVal('ustim.CSNum1',csnum1); % 0 tone, 1 DIO output (LED/wisker), 3 el/opt
     TDT.SetTargetVal('ustim.CSNum2',csnum2); % for DIO, 0 DIO1, 1 DIO2, 2 DIO3 
+    TDT.SetTargetVal('ustim.USNum',usnum);
+    TDT.SetTargetVal('ustim.USNum1',usnum1); % 0 tone, 1 DIO output (LED/wisker), 3 el/opt
+    TDT.SetTargetVal('ustim.USNum2',usnum2); % for DIO, 0 DIO1, 1 DIO2, 2 DIO3 
     TDT.SetTargetVal('ustim.CSToneFreq',cstonefreq);
     TDT.SetTargetVal('ustim.CSToneAmp',cstoneamp);
     TDT.SetTargetVal('sound.CSToneFreq',cstonefreq);
@@ -115,14 +139,24 @@ switch lower(metadata.stim.type) % controling el or opt devices
     case {'optoelectric','electrocondition'}
         TDT.SetTargetVal('ustim.StimDevice',2);   % both of el & opt
     case {'conditioning'}
+        TDT.SetTargetVal('ustim.StimDevice',3);   % no output from el/opt devices
         if ismember(csnum,[7])
-            TDT.SetTargetVal('ustim.StimDevice',0);
+            TDT.SetTargetVal('ustim.CSDevice',0);
         elseif ismember(csnum,[8])
-            TDT.SetTargetVal('ustim.StimDevice',1);
+            TDT.SetTargetVal('ustim.CSDevice',1);
         elseif ismember(csnum,[9])
-            TDT.SetTargetVal('ustim.StimDevice',2);   % both of el & opt
+            TDT.SetTargetVal('ustim.CSDevice',2);   % both of el & opt
         else
-            TDT.SetTargetVal('ustim.StimDevice',3);   % no output from el/opt devices
+            TDT.SetTargetVal('ustim.CSDevice',3);   % no output from el/opt devices
+        end
+        if ismember(usnum,[7])
+            TDT.SetTargetVal('ustim.USDevice',0);
+        elseif ismember(usnum,[8])
+            TDT.SetTargetVal('ustim.USDevice',1);
+        elseif ismember(usnum,[9])
+            TDT.SetTargetVal('ustim.USDevice',2);   % both of el & opt
+        else
+            TDT.SetTargetVal('ustim.USDevice',3);   % no output from el/opt devices
         end
 end
 
@@ -132,10 +166,6 @@ if get(handles.togglebutton_ampblank,'Value')   % If amplifier blank is set
 else
     TDT.SetTargetVal('ustim.BlankAmp',0);
 end
-
-
-
-
 
 
 

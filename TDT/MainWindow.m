@@ -22,7 +22,7 @@ function varargout = MainWindow(varargin)
 
 % Edit the above text to modify the response to help MainWindow
 
-% Last Modified by GUIDE v2.5 22-May-2015 19:11:52
+% Last Modified by GUIDE v2.5 13-Jan-2018 13:34:25
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -1522,4 +1522,27 @@ if get(hObject,'value') == 1
 else
     src.TriggerSelector='FrameStart';
     src.TriggerSource='Freerun';
+end
+
+
+
+function edit_usnum_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_usnum (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit_usnum as text
+%        str2double(get(hObject,'String')) returns contents of edit_usnum as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit_usnum_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit_usnum (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
 end

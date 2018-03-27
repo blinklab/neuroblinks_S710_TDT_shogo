@@ -48,6 +48,8 @@ metadata.stim.c.puffdur=str2double(get(handles.edit_puffdur,'String'));
     if length(metadata.stim.c.toneamp)<2, metadata.stim.c.toneamp(2)=0; end
 
     metadata.stim.c.ITI=str2double(get(handles.edit_ITI,'String'));
+    metadata.stim.c.usnum=str2double(get(handles.edit_usnum,'String'));
+%     metadata.stim.c.usnum=7;  % 0=puff
 
 %=== 'auto off' codes ====%
 % % Turns off the "continuous" button if we've reached the end of the table in case we want to limit the number of trials done
