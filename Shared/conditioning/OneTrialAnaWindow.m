@@ -308,7 +308,9 @@ xlim1=[trials.eye(t_num).time(1) trials.eye(t_num).time(end)];
 plotOneEyelid(t_num);
 
 text(xlim1*[0.38;0.62], -0.54, str_tl, 'fontsize',10)
-set(gca,'xlim',xlim1,'xtick',[-400:200:1000])
+set(gca,'xlim',xlim1,'xtick',[-400:50:1000])
+set(gca,'xticklabel',{'-400' '' '-300' '' '-200' '' '-100' '' '0' '' '100' '' '200' '' ...
+    '300' '' '400' '' '500' '' '600' '' '700' '' '800' '' '900' '' '1000'})
 set(gca,'color',[240 240 240]/255);
 
 
@@ -356,5 +358,7 @@ if isfield(trials,'spk'),
     plot(trials.spk(t_num).time,trials.spk(t_num).y,'k'), 
 end
 
-set(gca,'xlim',xlim2,'xtick',[0:100:1000])
+set(gca,'xlim',xlim2,'xtick',[-400:25:1000])
+set(gca,'xticklabel',{'-400' '' '' '' '-300' '' '' '' '-200' '' '' '' '-100' '' '' '' '0' '' '' '' '100' '' '' '' '200' '' '' '' ...
+    '300' '' '' '' '400' '' '' '' '500' '' '' '' '600' '' '' '' '700' '' '' '' '800' '' '' '' '900' '' '' '' '1000'})
 set(gca,'ylim',ylim3*1.0, 'ytick',ylim3,'yticklabel',{num2str(ylim3(1)) []}, 'box', 'off','tickdir','out')

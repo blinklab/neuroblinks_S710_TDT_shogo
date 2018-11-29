@@ -676,7 +676,8 @@ subplot(4,6,subpanels{2},'Parent',handles.uipanel_neuron)
 plot(bins,hst,'k')
 a=axis;
 axis([-pretm posttm 0 a(4)])
-set(gca,'TickDir','out','XTick',-pretm:0.2:posttm,'XTickLabel',(-pretm:0.2:posttm)*1e3)
+set(gca,'TickDir','out','XTick',-pretm:0.1:posttm,'XTickLabel',(-pretm:0.1:posttm)*1e3)
+set(gca,'XMinorTick','on','XGrid','on')
 xlabel('Time from trigger (ms)')
 ylabel('Firing rate (spk/s)')
 drawnow
@@ -788,7 +789,10 @@ set(gca,'ylim',[-0.15 1.20], 'ytick',[0:0.5:1], 'box', 'off','tickdir','out')
 for t_num=flttnum,
     plotOneEyelid(t_num);
 end
-set(gca,'xlim',[trials.eye(t_num).time(1) trials.eye(t_num).time(end)],'xtick',[-400:200:1000])
+set(gca,'xlim',[trials.eye(t_num).time(1) trials.eye(t_num).time(end)],'xtick',[-400:50:1000])
+set(gca,'xticklabel',{'-400' '' '' '' '-200' '' '' '' '0' '' '' '' '200' '' ...
+    '' '' '400' '' '' '' '600' '' '' '' '800' '' '' '' '1000'})
+set(gca,'XGrid','on')
 set(gca,'color',[240 240 240]/255)
 xlabel('Time from trial oset (ms)')
 

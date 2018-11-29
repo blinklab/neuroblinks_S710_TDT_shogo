@@ -46,6 +46,7 @@ end
     % --- behavioral stim by RZ5 ---- 
     TDT.SetTargetVal('ustim.ITI',metadata.stim.c.ITI);
     TDT.SetTargetVal('ustim.CsDur',metadata.stim.c.csdur);
+    % ==== CS channel ====
     csnum=metadata.stim.c.csnum;  cstonefreq=0;  cstoneamp=0;  csnum1=3; csnum2=3;
     if ismember(csnum,[5 6]),  % for auditory CS
         cstonefreq=min(metadata.stim.c.tonefreq(csnum-4), 40000);  
@@ -67,7 +68,11 @@ end
         TDT.SetTargetVal('ustim.LStimDelay',0);
         csnum1=3; csnum2=3;
     end
-    usnum=metadata.stim.c.usnum; usnum1=0;  usnum2=0; 
+    TDT.SetTargetVal('ustim.CSNum',csnum);
+    TDT.SetTargetVal('ustim.CSNum1',csnum1); % 0 tone, 1 DIO output (LED/wisker), 3 el/opt
+    TDT.SetTargetVal('ustim.CSNum2',csnum2); % for DIO, 0 DIO1, 1 DIO2, 2 DIO3 
+    % ==== US channel ====
+    usnum=metadata.stim.c.usnum; usnum1=0;  usnum2=0; % default = puff
     if ismember(usnum,[5 6]),  % for auditory CS
         cstonefreq=min(metadata.stim.c.tonefreq(usnum-4), 40000);  
         cstoneamp=metadata.stim.c.toneamp(usnum-4);
@@ -88,27 +93,55 @@ end
         TDT.SetTargetVal('ustim.LStimDelay',0);
         usnum1=3; usnum2=3;
     end
-    TDT.SetTargetVal('ustim.CSNum',csnum);
-    TDT.SetTargetVal('ustim.CSNum1',csnum1); % 0 tone, 1 DIO output (LED/wisker), 3 el/opt
-    TDT.SetTargetVal('ustim.CSNum2',csnum2); % for DIO, 0 DIO1, 1 DIO2, 2 DIO3 
     TDT.SetTargetVal('ustim.USNum',usnum);
     TDT.SetTargetVal('ustim.USNum1',usnum1); % 0 tone, 1 DIO output (LED/wisker), 3 el/opt
     TDT.SetTargetVal('ustim.USNum2',usnum2); % for DIO, 0 DIO1, 1 DIO2, 2 DIO3 
+    % ==== Stim(CS2) channel ====
+    stnum=metadata.stim.c.stnum; stnum1=0;  stnum2=0; % default = OFF
+    if ismember(stnum,[5 6]),  % for auditory CS
+        cstonefreq=min(metadata.stim.c.tonefreq(stnum-4), 40000);  
+        cstoneamp=metadata.stim.c.toneamp(stnum-4);
+        stnum=0; stnum1=0; stnum2=3; 
+    elseif ismember(stnum,[1 2 3 4]),  % for DIO CS (LED/Wisker)
+        stnum1=1; stnum2=stnum-1;
+    end
+    if strcmpi(metadata.stim.type,'conditioning') & ismember(stnum,[7 9]),  % for electrical CS
+        TDT.SetTargetVal('ustim.ETrainDur',metadata.stim.c.stdur);
+        TDT.SetTargetVal('ustim.EStimDelay',0);
+        stnum1=3; stnum2=3;
+    end
+    if strcmpi(metadata.stim.type,'conditioning') & ismember(stnum,[8 9]),  % for Laser CS
+        TDT.SetTargetVal('ustim.LTrainDur',metadata.stim.c.stdur);
+        if metadata.stim.l.freq<=2,
+            TDT.SetTargetVal('ustim.LPulseWidth',metadata.stim.c.stdur*1000);
+        end
+        if metadata.stim.c.stdur==0,
+            TDT.SetTargetVal('ustim.LPulseWidth',0);
+        end
+        TDT.SetTargetVal('ustim.LStimDelay',0);
+        stnum1=3; stnum2=3;
+    end
+    TDT.SetTargetVal('ustim.StNum',stnum);
+    TDT.SetTargetVal('ustim.StNum1',stnum1); % 0 tone, 1 DIO output (LED/wisker), 3 el/opt
+    TDT.SetTargetVal('ustim.StNum2',stnum2); % for DIO, 0 DIO1, 1 DIO2, 2 DIO3 
+    TDT.SetTargetVal('ustim.StDelay',metadata.stim.c.stdly+metadata.cam.time(1));
+    TDT.SetTargetVal('ustim.StDur',metadata.stim.c.stdur);
+
     TDT.SetTargetVal('ustim.CSToneFreq',cstonefreq);
     TDT.SetTargetVal('ustim.CSToneAmp',cstoneamp);
     TDT.SetTargetVal('sound.CSToneFreq',cstonefreq);
     TDT.SetTargetVal('sound.CSToneAmp',cstoneamp);
-    % csnum,cstonefreq,
-
+    
     TDT.SetTargetVal('ustim.ISI',metadata.stim.c.isi);
     TDT.SetTargetVal('ustim.UsDur',metadata.stim.c.usdur);
     % TDT.SetTargetVal('ustim.PuffMDelay',metadata.stim.c.puffdelay);
     TDT.SetTargetVal('ustim.PuffDurM',metadata.stim.c.puffdur);
 % end
 
-TDT.SetTargetVal('ustim.PreStimTime',metadata.cam.time(1));
+TDT.SetTargetVal('ustim.PreCamTime',metadata.cam.time(1));
 TDT.SetTargetVal('ustim.PuffSide',metadata.stim.p.side_value);
 TDT.SetTargetVal('ustim.PuffMDelay',metadata.stim.p.puffdelay);
+
 
 
 % switch lower(metadata.stim.type)
@@ -157,6 +190,15 @@ switch lower(metadata.stim.type) % controling el or opt devices
             TDT.SetTargetVal('ustim.USDevice',2);   % both of el & opt
         else
             TDT.SetTargetVal('ustim.USDevice',3);   % no output from el/opt devices
+        end
+        if ismember(stnum,[7])
+            TDT.SetTargetVal('ustim.StDevice',0);
+        elseif ismember(stnum,[8])
+            TDT.SetTargetVal('ustim.StDevice',1);
+        elseif ismember(stnum,[9])
+            TDT.SetTargetVal('ustim.StDevice',2);   % both of el & opt
+        else
+            TDT.SetTargetVal('ustim.StDevice',3);   % no output from el/opt devices
         end
 end
 

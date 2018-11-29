@@ -49,6 +49,17 @@ metadata.stim.c.puffdur=str2double(get(handles.edit_puffdur,'String'));
 
     metadata.stim.c.ITI=str2double(get(handles.edit_ITI,'String'));
     metadata.stim.c.usnum=str2double(get(handles.edit_usnum,'String'));
+    
+    if length(trialvars)>6,
+        metadata.stim.c.stnum = trialvars(5);
+        metadata.stim.c.stdur = trialvars(6);
+        metadata.stim.c.stdly = trialvars(7);
+    else
+        metadata.stim.c.stnum = 0;
+        metadata.stim.c.stdur = 0;
+        metadata.stim.c.stdly = 0; % negative value is OK (if -50, stim start 50 ms before CS onset)
+    end
+    
 %     metadata.stim.c.usnum=7;  % 0=puff
 
 %=== 'auto off' codes ====%
@@ -81,7 +92,8 @@ switch lower(stimmode)
         metadata.stim.totaltime=metadata.stim.e.traindur+metadata.stim.e.delay;
     case 'conditioning'
         % metadata.stim.totaltime=metadata.stim.c.isi+metadata.stim.c.usdur;
-        metadata.stim.totaltime=metadata.stim.c.csdur+metadata.stim.c.usdur;    % So that same duration is recorded even if using two different ISIs (b/c CS dur is same)
+        metadata.stim.totaltime=max([metadata.stim.c.stdur+metadata.stim.c.stdly;metadata.stim.c.csdur+metadata.stim.c.usdur]);
+%         metadata.stim.totaltime=metadata.stim.c.csdur+metadata.stim.c.usdur;    % So that same duration is recorded even if using two different ISIs (b/c CS dur is same)
     case {'optical','optocondition'}
         metadata.stim.totaltime=metadata.stim.l.traindur+metadata.stim.l.delay;
     case 'optoelectric'
