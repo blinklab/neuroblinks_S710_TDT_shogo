@@ -32,11 +32,12 @@ triggerconfig(vidobj, 'hardware', 'DeviceSpecific', 'DeviceSpecific');
 if isprop(src,'FrameStartTriggerMode')
     src.FrameStartTriggerMode = 'On';
     src.FrameStartTriggerActivation = 'RisingEdge';
-    src.FrameStartTriggerSource = 'Freerun';
+    src.FrameStartTriggerSource = 'FixedRate';
 else
     src.TriggerMode = 'On';
     src.TriggerActivation = 'RisingEdge';
-    src.TriggerSource = 'Freerun';
+%     src.TriggerSource = 'Freerun';
+    src.TriggerSource = 'FixedRate';
 end
 
 %% Save objects to root app data

@@ -51,9 +51,13 @@ end
     if ismember(csnum,[5 6]),  % for auditory CS
         cstonefreq=min(metadata.stim.c.tonefreq(csnum-4), 40000);  
         cstoneamp=metadata.stim.c.toneamp(csnum-4);
-        csnum=0; csnum1=0; csnum2=3; 
-    elseif ismember(csnum,[1 2 3 4]),  % for DIO CS (LED/Wisker)
-        csnum1=1; csnum2=csnum-1;
+    end
+    if metadata.stim.c.csdur>1
+        if ismember(csnum,[5 6]),  % for auditory CS
+            csnum=0; csnum1=0; csnum2=3;
+        elseif ismember(csnum,[1 2 3 4]),  % for DIO CS (LED/Wisker)
+            csnum1=1; csnum2=csnum-1;
+        end
     end
     if strcmpi(metadata.stim.type,'conditioning') & ismember(csnum,[7 9]),  % for electrical CS
         TDT.SetTargetVal('ustim.ETrainDur',metadata.stim.c.csdur);
@@ -136,6 +140,8 @@ end
     TDT.SetTargetVal('ustim.UsDur',metadata.stim.c.usdur);
     % TDT.SetTargetVal('ustim.PuffMDelay',metadata.stim.c.puffdelay);
     TDT.SetTargetVal('ustim.PuffDurM',metadata.stim.c.puffdur);
+    
+    TDT.SetTargetVal('ustim.tr_ID',metadata.stim.c.tr_ID); 
 % end
 
 TDT.SetTargetVal('ustim.PreCamTime',metadata.cam.time(1));
@@ -164,7 +170,7 @@ end
 
 switch lower(metadata.stim.type) % controling el or opt devices
     case {'none','puff'}
-        TDT.SetTargetVal('ustim.StimDevice',3);   % no output from el/opt devices
+%         TDT.SetTargetVal('ustim.StimDevice',3);   % no output from el/opt devices
     case {'electrical'}
         TDT.SetTargetVal('ustim.StimDevice',0);
     case {'optical','optocondition'}
@@ -173,29 +179,30 @@ switch lower(metadata.stim.type) % controling el or opt devices
         TDT.SetTargetVal('ustim.StimDevice',2);   % both of el & opt
     case {'conditioning'}
         TDT.SetTargetVal('ustim.StimDevice',3);   % no output from el/opt devices
-        if ismember(csnum,[7])
+        
+        if ismember(csnum,[7]) & metadata.stim.c.csdur>1
             TDT.SetTargetVal('ustim.CSDevice',0);
-        elseif ismember(csnum,[8])
+        elseif ismember(csnum,[8]) & metadata.stim.c.csdur>1
             TDT.SetTargetVal('ustim.CSDevice',1);
-        elseif ismember(csnum,[9])
+        elseif ismember(csnum,[9]) & metadata.stim.c.csdur>1
             TDT.SetTargetVal('ustim.CSDevice',2);   % both of el & opt
         else
             TDT.SetTargetVal('ustim.CSDevice',3);   % no output from el/opt devices
         end
-        if ismember(usnum,[7])
+        if ismember(usnum,[7]) & metadata.stim.c.usdur>1
             TDT.SetTargetVal('ustim.USDevice',0);
-        elseif ismember(usnum,[8])
+        elseif ismember(usnum,[8]) & metadata.stim.c.usdur>1
             TDT.SetTargetVal('ustim.USDevice',1);
-        elseif ismember(usnum,[9])
+        elseif ismember(usnum,[9]) & metadata.stim.c.usdur>1
             TDT.SetTargetVal('ustim.USDevice',2);   % both of el & opt
         else
             TDT.SetTargetVal('ustim.USDevice',3);   % no output from el/opt devices
         end
-        if ismember(stnum,[7])
+        if ismember(stnum,[7]) & metadata.stim.c.stdur>1
             TDT.SetTargetVal('ustim.StDevice',0);
-        elseif ismember(stnum,[8])
+        elseif ismember(stnum,[8]) & metadata.stim.c.stdur>1
             TDT.SetTargetVal('ustim.StDevice',1);
-        elseif ismember(stnum,[9])
+        elseif ismember(stnum,[9]) & metadata.stim.c.stdur>1
             TDT.SetTargetVal('ustim.StDevice',2);   % both of el & opt
         else
             TDT.SetTargetVal('ustim.StDevice',3);   % no output from el/opt devices

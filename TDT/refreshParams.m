@@ -50,6 +50,11 @@ metadata.stim.c.puffdur=str2double(get(handles.edit_puffdur,'String'));
     metadata.stim.c.ITI=str2double(get(handles.edit_ITI,'String'));
     metadata.stim.c.usnum=str2double(get(handles.edit_usnum,'String'));
     
+    if length(trialvars)>7,
+        metadata.stim.c.tr_ID=trialvars(8);
+    else
+        metadata.stim.c.tr_ID=0;
+    end
     if length(trialvars)>6,
         metadata.stim.c.stnum = trialvars(5);
         metadata.stim.c.stdur = trialvars(6);

@@ -1,16 +1,18 @@
 function InitCam(ch,recdur)
 % First delete any existing image acquisition objects
-
+neuroblinks_config
 imaqreset
 
 disp('creating video object ...')
 % vidobj = videoinput('gentl', ch, 'Mono8');
-vidobj = videoinput('gige', ch, 'Mono8');
+vidobj = videoinput(CAMADAPTOR, ch, 'Mono8');
 disp('video settings ....')
 
 metadata=getappdata(0,'metadata');
 
 src = getselectedsource(vidobj);
+
+src.StreamBytesPerSecond = 90000000;
 src.ExposureTimeAbs = metadata.cam.init_ExposureTime;
 
 % Different version of the camera drivers (and different versions of
@@ -28,11 +30,13 @@ else
 end
 
 % src.NetworkPacketSize = '9014';
-src.PacketSize = 8228;
+if strcmpi(CAMADAPTOR,'gige'),
+    src.PacketSize = 8228;
+%     src.PacketSize = 2000;
+    src.PacketDelay = 2000;		% Calculated based on frame rate and image size using Mathworks helper function
+end
 
-src.PacketDelay = 2000;		% Calculated based on frame rate and image size using Mathworks helper function
 vidobj.LoggingMode = 'memory'; 
-src.AcquisitionFrameRateAbs=200;
 vidobj.FramesPerTrigger=1;
 
 % vidobj.LoggingMode = 'memory'; 
@@ -56,12 +60,15 @@ if isprop(src,'FrameStartTriggerMode')
     src.FrameStartTriggerSource = 'Freerun';
 else
     src.TriggerMode = 'On';
-    src.TriggerActivation = 'LevelHigh';
-    src.TriggerSource = 'Freerun';
+    src.TriggerActivation = 'LevelHigh'; % RisingEdge,
+    src.TriggerSource = 'Freerun';  % FixedRate
+%     src.TriggerSelector = 'FrameStart';
 end
-    
+
+src.AcquisitionFrameRateAbs=200;
 
 %% Save objects to root app data
 
 setappdata(0,'vidobj',vidobj)
 setappdata(0,'src',src)
+

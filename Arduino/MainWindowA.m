@@ -63,7 +63,8 @@ metadata.TDTblockname='TempBlk';
 metadata.ts=[datenum(clock) 0]; % two element vector containing datenum at beginning of session and offset of current trial (in seconds) from beginning
 metadata.folder=pwd; % For now use current folder as base; will want to change this later
 
-metadata.cam.fps=src.AcquisitionFrameRateAbs; %in frames per second
+% metadata.cam.fps=src.AcquisitionFrameRateAbs; %in frames per second
+metadata.cam.fps=200; %in frames per second
 metadata.cam.thresh=0.125;
 metadata.cam.trialnum=1;
 metadata.eye.trialnum1=1;  %  for conditioning

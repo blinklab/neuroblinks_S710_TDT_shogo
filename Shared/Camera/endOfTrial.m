@@ -10,6 +10,19 @@ src = getappdata(0,'src');
 handles = guidata(ghandles.maingui);
 
 % Set camera to freerun mode so we can preview
+% Moved to end of function, see below JJS
+
+% --  saving data to HDD --
+if get(handles.checkbox_record,'Value') == 1  
+    incrementStimTrial()
+    savetrial();
+else
+    nosavetrial();  
+end
+pause(1)
+
+% Set camera to freerun mode after saving data so we can preview without
+% dropped frames
 if isprop(src,'FrameStartTriggerSource')
     src.FrameStartTriggerSource = 'Freerun';
     src.FrameStartTriggerActivation = 'LevelHigh';
@@ -19,14 +32,6 @@ else
     src.TriggerActivation = 'LevelHigh';
     vidobj.ROIposition=metadata.cam.vidobj_ROIposition;
 end
-
-if get(handles.checkbox_record,'Value') == 1  
-    incrementStimTrial()
-    savetrial();
-else
-    nosavetrial();  
-end
-
 
 function incrementStimTrial()
 trials=getappdata(0,'trials');

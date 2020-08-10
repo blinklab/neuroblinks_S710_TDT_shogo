@@ -22,7 +22,7 @@ function varargout = MainWindow(varargin)
 
 % Edit the above text to modify the response to help MainWindow
 
-% Last Modified by GUIDE v2.5 13-Jan-2018 13:34:25
+% Last Modified by GUIDE v2.5 07-Nov-2019 13:07:52
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -67,7 +67,8 @@ metadata.TDTblockname='';
 metadata.folder=pwd; % For now use current folder as base; will want to change this later
 
 % NOTE: The next two vars should be set in initcam, not here
-metadata.cam.fps=src.AcquisitionFrameRateAbs; %in frames per second
+% metadata.cam.fps=src.AcquisitionFrameRateAbs; %in frames per second
+metadata.cam.fps=200; %in frames per second
 metadata.cam.thresh=0.125;
 metadata.cam.trialnum=1;
 metadata.eye.trialnum1=1;  %  for conditioning
@@ -104,10 +105,12 @@ guidata(hObject, handles);
 % % Open parameter dialog
 % h=ParamsWindow;
 % waitfor(h);
-
-pushbutton_StartStopPreview_Callback(handles.pushbutton_StartStopPreview, [], handles)
-pause(0.2) 
-pushbutton_StartStopPreview_Callback(handles.pushbutton_StartStopPreview, [], handles)
+neuroblinks_config
+if strcmpi(CAMADAPTOR,'gige'),
+    pushbutton_StartStopPreview_Callback(handles.pushbutton_StartStopPreview, [], handles)
+    pause(0.2)
+    pushbutton_StartStopPreview_Callback(handles.pushbutton_StartStopPreview, [], handles)
+end
 
 % Create timer to check if we are recording every 3 seconds
 % First delete old instances
@@ -1095,7 +1098,7 @@ sendParamsToTDT(hObject)
 TDT=getappdata(0,'tdt');
 vidobj=getappdata(0,'vidobj');
 metadata=getappdata(0,'metadata');
-
+src=getappdata(0,'src');
 metadata.stim.type='Puff';
 
 % Send TDT trial number of zero 
@@ -1110,6 +1113,13 @@ TDT.SetTargetVal('ustim.StimDevice',3);
 frames_per_trial=ceil(metadata.cam.fps.*(sum(metadata.cam.time))./1000);
 vidobj.TriggerRepeat = frames_per_trial-1;
 vidobj.StopFcn=@CalbEye;   % @nosavetrial
+
+% if isprop(src,'FrameStartTriggerSource')
+%     src.FrameStartTriggerSource = 'FixedRate';  % Switch from free run to TTL mode
+% else
+%     src.TriggerSource = 'FixedRate';  % ROI is modified by DSP subregion
+% end
+
 flushdata(vidobj); % Remove any data from buffer before triggering
 start(vidobj)
 
@@ -1523,7 +1533,7 @@ if get(hObject,'value') == 1
     src.TriggerSource='Line1';
 else
     src.TriggerSelector='FrameStart';
-    src.TriggerSource='Freerun';
+    src.TriggerSource='Freerun'; % FixedRate
 end
 
 
@@ -1548,3 +1558,23 @@ function edit_usnum_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
+% --- Executes on button press in pushbutton_flush.
+function pushbutton_flush_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_flush (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+vidobj=getappdata(0,'vidobj');
+src=getappdata(0,'src');
+
+flushdata(vidobj);
+stop(vidobj);
+
+pushbutton_StartStopPreview_Callback(handles.pushbutton_StartStopPreview, [], handles)
+pause(0.2)
+pushbutton_StartStopPreview_Callback(handles.pushbutton_StartStopPreview, [], handles)
+
+src.TriggerSource = 'Freerun';
+

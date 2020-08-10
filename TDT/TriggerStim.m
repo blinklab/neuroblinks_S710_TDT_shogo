@@ -61,8 +61,8 @@ if isprop(src,'FrameStartTriggerSource')
     src.FrameStartTriggerActivation = 'RisingEdge';
     vidobj.ROIposition=metadata.cam.vidobj_ROIposition;
 else
-%     src.TriggerSource = 'FixedRate';
-    src.TriggerSource = 'Line1';  % ROI is modified by DSP subregion
+    src.TriggerSource = 'FixedRate';
+%     src.TriggerSource = 'Line1';  % ROI is modified by DSP subregion
     src.TriggerActivation = 'RisingEdge';
     vidobj.ROIposition=metadata.cam.vidobj_ROIposition; % ROI correction
 end

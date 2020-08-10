@@ -1,6 +1,8 @@
 % Configuration settings that might be different for different users/computers
 % Should be somewhere in path but not "neuroblinks" directory or subdirectory
 
+CAMADAPTOR = 'gige';  % camera adaptor,  'gige', 'gentl'
+
 % If you specify a default device here you can launch neuroblinks by simply typing "neuroblinks"
 % at the command prompt without needing to specify any arguments. To use a non-default device, 
 % launch neuroblinks as for example "neuroblinks('arduino')". 

@@ -12,6 +12,7 @@ data=getdata(vidobj,vidobj.FramesPerTrigger*(vidobj.TriggerRepeat + 1));
 if isprop(src,'FrameStartTriggerSource')
     src.FrameStartTriggerSource = 'Freerun';
 else
+%     src.TriggerSource = 'Freerun';
     src.TriggerSource = 'Freerun';
 end
 
@@ -33,6 +34,7 @@ setappdata(0,'ghandles',ghandles);
 % % Have to do the following 2 lines because we can't call drawhist and
 % % drawbinary directly from the ThreshWindow opening function since the
 % % ghandles struct doesn't exist yet. 
+
 threshguihandles=guidata(ghandles.threshgui2);
 ThreshWindowWithPuff('drawbinary',threshguihandles);
 
